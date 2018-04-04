@@ -3,7 +3,7 @@ import random
 from random import randint
 from discord.ext.commands import Bot
 
-bot = Bot(command_prefix="/")
+bot = Bot(command_prefix="!")
 #prefix is !
 
 @bot.event

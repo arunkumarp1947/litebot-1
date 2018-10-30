@@ -71,8 +71,8 @@ async def help(ctx, *args):
 #Kick users
 @bot.command (pass_context=True)
 async def kick(ctx, Member : discord.User):
-	if (Member.id == "342342" or Member.id == "342342"):
-		bot.say("Unable to kick that user")
+	if (Member.id == "227422944123551754" or Member.id == "405829095054770187"):
+		await bot.say("Unable to kick that user")
 	else:
 		if (ctx.message.author.server_permissions.kick_members == True or ctx.message.author.server_permissions.administrator == True):
 			try: 
@@ -86,8 +86,8 @@ async def kick(ctx, Member : discord.User):
 #Ban users		
 @bot.command (pass_context=True)
 async def ban(ctx, Member : discord.User):
-	if (Member.id == "342342" or Member.id == "342342"):
-		bot.say("Unable to ban that user")
+	if (Member.id == "227422944123551754" or Member.id == "405829095054770187"):
+		await bot.say("Unable to ban that user")
 	else:
 		if (ctx.message.author.server_permissions.ban_members == True or ctx.message.author.server_permissions.administrator == True):
 			try: 

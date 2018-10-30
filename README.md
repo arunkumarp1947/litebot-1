@@ -7,6 +7,7 @@ This is a dicord bot for simple moderation
 - ☑ Kicking & Banning commands
 - ☑ Report function
 - ☑ Purge Messages
+- ☐ Help command
 - ☐ Server specific settings
 - ☐ Currency
 - ☐ Music System

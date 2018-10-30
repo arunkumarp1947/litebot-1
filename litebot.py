@@ -1,5 +1,6 @@
 import discord
 import random
+from datetime import datetime
 from random import randint
 from discord.ext.commands import Bot
 
@@ -52,8 +53,18 @@ async def ban(ctx, Member : discord.User):
 			await bot.say("Unable to ban **" + Member.name + "**")			
 	else:
 		await bot.say("You do not have permission to ban **" + Member.name + "**")
-	
-#settings.owner
+
+@bot.command (pass_context=True)		
+async def report(ctx, Member : discord.User, reportContent):
+	await bot.send_message(ctx.message.author, "Your report against **" + Member.name+"#"+Member.discriminator + "** has been submitted to the server's owner")
+	try:
+		reportServer = ctx.message.author.server
+		embed=discord.Embed(title="Submitted by "+ctx.message.author.name+"#"+Member.discriminator, description=reportContent)
+		embed.set_author(name="Report against "+Member.name+"#"+Member.discriminator)
+		await bot.send_message(reportServer.owner, embed=embed)
+	except discord.HTTPException:
+		bot.send_message(ctx.message.author, "Your report against **" + Member.name + "** was unable to be sent to the server's owner")
+	await bot.delete_message(ctx.message)
 	
 print ('Lite-Bot is activating')
 print ('Ready')

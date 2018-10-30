@@ -2,11 +2,13 @@ import discord
 import random
 from datetime import datetime
 from random import randint
+from discord.ext import commands
 from discord.ext.commands import Bot
+
 
 bot = Bot(command_prefix="!")
 #prefix is !
-
+bot.remove_command('help')
 @bot.event
 async def on_read():
 	print("Client logged in")
@@ -32,6 +34,17 @@ async def on_message(message, timeout=10):
 			print ("Deleted Message By: " + str(message.author))
 			
 	await bot.process_commands(message)
+	
+@bot.event
+async def on_command_error(error, ctx):
+	if isinstance(error, commands.CommandNotFound):
+		await bot.send_message(ctx.message.channel,"Command not found, do !help for examples")
+	if isinstance(error, commands.MissingRequiredArgument):
+		await bot.send_message(ctx.message.channel,"Missing required arguments, do !help for examples")
+	if isinstance(error, commands.BadArgument):
+		await bot.send_message(ctx.message.channel,"Invalid argument, do !help for examples")
+	if isinstance(error, commands.TooManyArguments):
+		await bot.send_message(ctx.message.channel,"Too many arguments, do !help for examples")		
 
 @bot.command (pass_context=True)
 async def kick(ctx, Member : discord.User):
@@ -42,7 +55,8 @@ async def kick(ctx, Member : discord.User):
 		except discord.HTTPException:
 			await bot.say("Unable to kick **" + Member.name + "**.")
 	else:
-		await bot.say("You do not have permission to kick** " + Member.name + "**")			
+		await bot.say("You do not have permission to kick** " + Member.name + "**")
+		
 @bot.command (pass_context=True)
 async def ban(ctx, Member : discord.User):
 	if (ctx.message.author.server_permissions.ban_members == True or ctx.message.author.server_permissions.administrator == True):
@@ -59,7 +73,7 @@ async def report(ctx, Member : discord.User, reportContent):
 	await bot.send_message(ctx.message.author, "Your report against **" + Member.name+"#"+Member.discriminator + "** has been submitted to the server's owner")
 	try:
 		reportServer = ctx.message.author.server
-		embed=discord.Embed(title="Submitted by "+ctx.message.author.name+"#"+Member.discriminator, description=reportContent)
+		embed=discord.Embed(title="Submitted by "+ctx.message.author.name+"#"+ctx.message.author.discriminator, description=reportContent)
 		embed.set_author(name="Report against "+Member.name+"#"+Member.discriminator)
 		await bot.send_message(reportServer.owner, embed=embed)
 	except discord.HTTPException:
@@ -68,8 +82,11 @@ async def report(ctx, Member : discord.User, reportContent):
 	
 @bot.command (pass_context=True)		
 async def purge(ctx, numPurge : int):
-	await bot.delete_message(ctx.message)
-	await bot.purge_from(ctx.message.channel,limit=numPurge)
+	await bot.delete_message(ctx.message)	
+	try:
+		await bot.purge_from(ctx.message.channel,limit=numPurge)
+	except discord.HTTPException:
+		await bot.say("Unable to purge messages")
 	
 print ('Lite-Bot is activating')
 print ('Ready')

@@ -121,7 +121,7 @@ async def purge(ctx, numPurge : int):
 		await bot.say("Unable to purge messages")
 
 print ('Ready\n')
-print ('(ᵔᴥᵔ)\n'')
+print ('(ᵔᴥᵔ)\n')
 
 #Opens words file
 f = open('words.txt', 'r')

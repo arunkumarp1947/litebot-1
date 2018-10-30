@@ -5,9 +5,10 @@ This is a dicord bot for simple moderation
 - ☑ Deletes messages containing any words in words.txt
 - ☑ Join & Leave messages
 - ☑ Kicking & Banning commands
+- ☑ Report function
+- ☐ Purge Messages
 - ☐ Server specific settings
 - ☐ Currency
 - ☐ Music System
-- ☐ Report function
 - ☐ Roles from reaction
 - ☐ Translate

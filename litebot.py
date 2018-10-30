@@ -66,6 +66,11 @@ async def report(ctx, Member : discord.User, reportContent):
 		bot.send_message(ctx.message.author, "Your report against **" + Member.name + "** was unable to be sent to the server's owner")
 	await bot.delete_message(ctx.message)
 	
+@bot.command (pass_context=True)		
+async def purge(ctx, numPurge : int):
+	await bot.delete_message(ctx.message)
+	await bot.purge_from(ctx.message.channel,limit=numPurge)
+	
 print ('Lite-Bot is activating')
 print ('Ready')
 print ('')

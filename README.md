@@ -8,9 +8,9 @@ This is a dicord bot for simple moderation. It can delete messages containing ba
 - ☑ Report function
 - ☑ Purge Messages 
 - ☑ Help command
+- ☑ Invite blocking
+- ☑ Server specific disabling/enabling commands
+- ☐ Music System
 - ☐ Purge specific user's messages
-- ☐ Server specific disable/enable commands
 - ☐ Currency
 - ☐ Roles from reaction
-- ☐ Translate
-- ☐ Music System

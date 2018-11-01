@@ -40,6 +40,11 @@ async def on_message(message, timeout=10):
 			if str(i) in message.content:
 				await bot.delete_message(message)
 				await bot.send_message(message.channel, "No swearing")
+				
+	elif ((await check_enabled('invite',message.author.server) == 1)and(message.author.server_permissions.administrator == False)):
+		if ("discord.gg" in message.content.lower()): 
+			await bot.delete_message(message)
+			await bot.send_message(message.channel, "Invites are not allowed in this server")
 		
 	await bot.process_commands(message)
 
@@ -178,6 +183,12 @@ async def set(ctx, command : str, ifEnable : int):
 		elif (command.lower() == 'report' and ifEnable == 0):
 			enabled[ctx.message.server.id]['report'] = 0
 			await bot.say("Report has been disabled")
+		elif (command.lower() == 'invite' and ifEnable == 1):
+			enabled[ctx.message.server.id]['invite'] = 1
+			await bot.say("Invite blocking has been enabled")
+		elif (command.lower() == 'invite' and ifEnable == 0):
+			enabled[ctx.message.server.id]['invite'] = 0
+			await bot.say("Invite blocking has been disabled")
 		elif (command.lower() == 'swear' and ifEnable == 1):
 			enabled[ctx.message.server.id]['swear'] = 1
 			await bot.say("Swear prevention has been enabled")
@@ -199,7 +210,8 @@ async def update_data(enabled, server):
 		enabled[server.id]['purge'] = 1
 		enabled[server.id]['join'] = 1
 		enabled[server.id]['leave'] = 1
-		enabled[server.id]['report'] = 1
+		enabled[server.id]['report'] = 0	
+		enabled[server.id]['invite'] = 0
 		enabled[server.id]['swear'] = 1
 
 async def check_enabled(command, server):

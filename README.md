@@ -8,7 +8,8 @@ This is a dicord bot for simple moderation. It can delete messages containing ba
 - ☑ Report function
 - ☑ Purge Messages 
 - ☑ Help command
-- ☑ Server specific disable/enable commands
+- ☐ Purge specific user's messages
+- ☐ Server specific disable/enable commands
 - ☐ Currency
 - ☐ Roles from reaction
 - ☐ Translate

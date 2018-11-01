@@ -16,14 +16,14 @@ bot.remove_command('help')
 async def on_read():
 	print("Client logged in")
 
-#Welcome @user
+#Message on user join
 @bot.async_event
 async def on_member_join(Member : discord.User):
 	if (await check_enabled('join',Member.server) == 1):
 		await bot.send_message(bot.get_channel(Member.server.id),"Welcome **"+Member.mention+"**")
 	else:
 		return
-#user has left the server
+#Message on user leave
 @bot.async_event
 async def on_member_remove(Member : discord.User):
 	if (await check_enabled('leave',Member.server) == 1):
@@ -31,7 +31,7 @@ async def on_member_remove(Member : discord.User):
 	else:
 		return
 
-#Deletes messages that include key words
+#Deletes messages that include key words, and discord invites
 @bot.event
 async def on_message(message, timeout=10):
 	if (await check_enabled('swear',message.author.server) == 1):
@@ -71,15 +71,18 @@ async def help(ctx, *args):
 		await bot.say("Mass deletes messages\n`!purge 30`")
 	elif ("".join(args) == "report"):
 		await bot.say("Sends a report to the server's owner, requires double quotes around the report content\n`!report @user#0000 \"Stealing the Village gold\"`")
+	elif ("".join(args) == "set"):
+		await bot.say("Enables or disables a command, 1 = enable, 0 = disable.\n`!set kick 0`")
 	else:
 		embed=discord.Embed(title="Help")
 		embed.add_field(name="!ban", value="!ban @user#0000", inline=False)
 		embed.add_field(name="!kick", value="!kick @user#0000", inline=False)
 		embed.add_field(name="!purge", value="!purge <NumberOfMessages>", inline=False)
 		embed.add_field(name="!report", value="!report @user#0000 \"Report Content\"", inline=False)
+		embed.add_field(name="!set", value="!set <Command> <1Or0>", inline=False)
 		await bot.say(embed=embed)
 
-#Kick users
+#Kick user
 @bot.command (pass_context=True)
 async def kick(ctx, Member : discord.User):
 	if (await check_enabled('kick',Member.server) == 1):
@@ -97,7 +100,7 @@ async def kick(ctx, Member : discord.User):
 	else:
 		await bot.say("Kick is disabled")
 
-#Ban users		
+#Ban user	
 @bot.command (pass_context=True)
 async def ban(ctx, Member : discord.User):
 	if (await check_enabled('ban',Member.server) == 1):
@@ -129,6 +132,7 @@ async def report(ctx, Member : discord.User, reportContent):
 		await bot.delete_message(ctx.message)
 	else:
 		await bot.say("Report is disabled")
+		
 #Purges messages	
 @bot.command (pass_context=True)		
 async def purge(ctx, numPurge : int,):
@@ -141,6 +145,7 @@ async def purge(ctx, numPurge : int,):
 	else:
 		await bot.say("Purge is disabled")
 
+#Sets commands as either enabled or disabled
 @bot.command (pass_context=True)
 async def set(ctx, command : str, ifEnable : int):			
 	with open('enabled.json', 'r') as j:
@@ -201,7 +206,8 @@ async def set(ctx, command : str, ifEnable : int):
 		bot.say("You must have administrator to enable or disable a command")
 	with open("enabled.json", "w") as j:
 		json.dump(enabled, j)
-	
+
+#Function to update json file		
 async def update_data(enabled, server):
 	if not server.id in enabled:
 		enabled[server.id] = {}
@@ -214,6 +220,7 @@ async def update_data(enabled, server):
 		enabled[server.id]['invite'] = 0
 		enabled[server.id]['swear'] = 1
 
+#Function to make it easier for commands to see if they are enabled
 async def check_enabled(command, server):
 	with open('enabled.json', 'r') as j:
 		enabled = json.load(j)

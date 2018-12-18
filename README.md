@@ -10,9 +10,11 @@ This is a dicord bot for simple moderation. It can delete messages containing ba
 - ☑ Help command
 - ☑ Invite blocking
 - ☑ Server specific disabling/enabling commands
+- ☐ Better config - Set channel for join/leave messages
 - ☐ New prefix
-- ☐ Set channel for join/leave messages
+- ☐ Roles from reaction
+
+## Most Likely not going to do
 - ☐ Music System
 - ☐ Purge specific user's messages
 - ☐ Currency
-- ☐ Roles from reaction

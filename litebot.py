@@ -20,7 +20,7 @@ async def on_read():
 @bot.async_event
 async def on_member_join(Member : discord.User):
 	if (await check_config('join',Member.server, False) == 1):	
-		channelId = check_config('joinleave',Member.server, True)
+		channelId = check_config('joinleaveChannel',Member.server, True)
 		await bot.send_message(bot.get_channel(channelId),"Welcome **"+Member.mention+"**")
 	else:
 		return
@@ -28,7 +28,7 @@ async def on_member_join(Member : discord.User):
 @bot.async_event
 async def on_member_remove(Member : discord.User):
 	if (await check_config('join',Member.server, False) == 1):	
-		channelId = check_config('joinleave',Member.server, True)
+		channelId = check_config('joinleaveChannel',Member.server, True)
 		await bot.send_message(bot.get_channel(channelId),"**"+Member.name+"** has left the server")
 	else:
 		return
@@ -36,19 +36,22 @@ async def on_member_remove(Member : discord.User):
 #Deletes messages that include key words, and discord invites
 @bot.event
 async def on_message(message, timeout=10):
-	if (await check_config('swear',message.author.server, False) == 1):
-		message.content = message.content.lower()
-		for i in words:
-			if str(i) in message.content:
-				await bot.delete_message(message)
-				await bot.send_message(message.channel, "No swearing")
+	if (message.channel.is_private==False):
+		if (await check_config('swear',message.author.server, False) == 1):
+			message.content = message.content.lower()
+			for i in words:
+				if str(i) in message.content:
+					await bot.delete_message(message)
+					await bot.send_message(message.channel, "No swearing")
 				
-	elif ((await check_config('invite',message.author.server, False) == 1)and(message.author.server_permissions.administrator == False)):
-		if ("discord.gg" in message.content.lower()): 
-			await bot.delete_message(message)
-			await bot.send_message(message.channel, "Invites are not allowed in this server")
+		elif ((await check_config('invite',message.author.server, False) == 1)and(message.author.server_permissions.administrator == False)):
+			if ("discord.gg" in message.content.lower()): 
+				await bot.delete_message(message)
+				await bot.send_message(message.channel, "Invites are not allowed in this server")
 		
-	await bot.process_commands(message)
+		await bot.process_commands(message)
+	else: 
+		return
 
 #Replies to invalid commands	
 @bot.event
@@ -127,10 +130,19 @@ async def report(ctx, Member : discord.User, reportContent):
 	if (await check_config('report',Member.server, False) == 1):
 		await bot.send_message(ctx.message.author, "Your report against **" + Member.name+"#"+Member.discriminator + "** has been submitted to the server's owner")
 		try:
-			reportServer = ctx.message.author.server
+			channelId = await check_config('reportChannel',Member.server, True)
+			
+			if "#" in channelId:
+				channelId = channelId.replace('#', '')
+				reportSendLocation = bot.get_channel(channelId)
+			elif "@" in channelId: 
+				channelId = channelId.replace('@', '').replace('!', '')
+				reportSendLocation = await bot.get_user_info(channelId)
+			
+			#reportServer = ctx.message.author.server
 			embed=discord.Embed(title="Submitted by "+ctx.message.author.name+"#"+ctx.message.author.discriminator, description=reportContent)
 			embed.set_author(name="Report against "+Member.name+"#"+Member.discriminator)
-			await bot.send_message(reportServer.owner, embed=embed)
+			await bot.send_message(reportSendLocation, embed=embed)
 		except discord.HTTPException:
 			bot.send_message(ctx.message.author, "Your report against **" + Member.name + "** was unable to be sent to the server's owner")
 		await bot.delete_message(ctx.message)
@@ -237,8 +249,12 @@ async def set(ctx, command : str, input : str):
 
 		if (command.lower() == 'join' or command.lower() == 'leave'):
 			channelId = input.replace('#', '').replace('<', '').replace('>', '')
-			config[ctx.message.server.id]["joinleave"]= channelId
+			config[ctx.message.server.id]["joinleaveChannel"]= channelId
 			await bot.say("Set join & leave messages channel to "+bot.get_channel(str(channelId)).mention)
+		elif (command.lower() == 'report'):
+			channelId = input.replace('<', '').replace('>', '')
+			config[ctx.message.server.id]["reportChannel"]= channelId
+			await bot.say("Set report messages channel to "+input)
 		else:
 			await bot.say("Invalid argument. Do `!help set` for more info")
 	else:
@@ -259,7 +275,7 @@ async def update_data(config, server):
 		config[server.id]["enabled"]['report'] = 0	
 		config[server.id]["enabled"]['invite'] = 0
 		config[server.id]["enabled"]['swear'] = 1
-		config[server.id]["joinleave"] = ""
+		config[server.id]["joinleaveChannel"] = ""
 
 #Function to make it easier for commands to see if they are config
 async def check_config(command, server, outsideEnabled):

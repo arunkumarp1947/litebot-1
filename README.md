@@ -1,5 +1,5 @@
 # litebot
-This is a dicord bot for simple moderation. It can delete messages containing banned words, say when users join or leave the server, report a user to the owner and more. More features are coming soon such as server specific settings
+Litebot is a dicord bot for simple moderation. It can delete messages containing banned words, announce when users join or leave the server, report a user to the owner and more. More features are coming soon
 
 ## To do
 - ☑ Deletes messages containing any words in words.txt

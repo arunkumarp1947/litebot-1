@@ -126,11 +126,12 @@ async def ban(ctx, Member : discord.User):
 				await bot.say("You do not have permission to ban **" + Member.name + "**")
 	else:
 		await bot.say("Ban is disabled")
-#Sends a dm to server's owner
+		
+#Sends a report to the report channel
 @bot.command (pass_context=True)		
 async def report(ctx, Member : discord.User, reportContent):
 	if (await check_config('report',Member.server, False) == 1):
-		await bot.send_message(ctx.message.author, "Your report against **" + Member.name+"#"+Member.discriminator + "** has been submitted to the server's owner")
+		await bot.send_message(ctx.message.author, "Your report against **"+Member.name+"#"+Member.discriminator+"** has been submitted to the server's owner")
 		try:
 			channelId = await check_config('reportChannel',Member.server, True)
 			
@@ -141,25 +142,25 @@ async def report(ctx, Member : discord.User, reportContent):
 				channelId = channelId.replace('@', '').replace('!', '')
 				reportSendLocation = await bot.get_user_info(channelId)
 			
-			#reportServer = ctx.message.author.server
 			embed=discord.Embed(title="Submitted by "+ctx.message.author.name+"#"+ctx.message.author.discriminator, description=reportContent)
 			embed.set_author(name="Report against "+Member.name+"#"+Member.discriminator)
 			await bot.send_message(reportSendLocation, embed=embed)
 		except discord.HTTPException:
-			bot.send_message(ctx.message.author, "Your report against **" + Member.name + "** was unable to be sent to the server's owner")
+			bot.send_message(ctx.message.author, "Your report against **" + Member.name + "** was unable to be sent")
 		await bot.delete_message(ctx.message)
 	else:
 		await bot.say("Report is disabled")
 		
 #Purges messages	
-@bot.command (pass_context=True)		
+@bot.command (pass_context=True)#Need to add perm checker
 async def purge(ctx, numPurge : int,):
 	if (await check_config('purge',ctx.message.author.server, False) == 1):
-		await bot.delete_message(ctx.message)
-		try:
-			await bot.purge_from(ctx.message.channel,limit=numPurge)
-		except discord.HTTPException:
-			await bot.say("Unable to purge messages")
+		if (ctx.message.author.server_permissions.manage_messages == True or ctx.message.author.server_permissions.administrator == True):
+			await bot.delete_message(ctx.message)
+			try:
+				await bot.purge_from(ctx.message.channel,limit=numPurge)
+			except discord.HTTPException:
+				await bot.say("Unable to purge messages")
 	else:
 		await bot.say("Purge is disabled")
 
@@ -236,7 +237,7 @@ async def disable(ctx, command : str):
 		else:
 			await bot.say("Invalid argument. Do `!help disable` for more info")
 	else:
-		bot.say("You must have administrator to enable or disable a command")
+		bot.say("You must have administrator to set a command")
 	with open("config.json", "w") as j:
 		json.dump(config, j)		
 				
@@ -249,10 +250,13 @@ async def set(ctx, command : str, input : str):
 
 	if (ctx.message.author.server_permissions.administrator == True):
 
-		if (command.lower() == 'join' or command.lower() == 'leave'):
+		if (command.lower() == 'join' or command.lower() == 'leave' or command.lower() == 'joinleave'):
 			channelId = input.replace('#', '').replace('<', '').replace('>', '')
 			config[ctx.message.server.id]["joinleaveChannel"]= channelId
-			await bot.say("Set join & leave messages channel to "+input)
+			if (bot.get_channel(channelId)=="None"):
+				await bot.say("Not a valid channel")
+			else:
+				await bot.say("Set join & leave messages channel to "+input)
 			
 		elif (command.lower() == 'report'):
 			channelId = input.replace('<', '').replace('>', '')

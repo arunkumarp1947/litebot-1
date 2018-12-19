@@ -86,7 +86,9 @@ async def help(ctx, *args):
 		embed.add_field(name="!kick", value="!kick @user#0000", inline=False)
 		embed.add_field(name="!purge", value="!purge <NumberOfMessages>", inline=False)
 		embed.add_field(name="!report", value="!report @user#0000 \"Report Content\"", inline=False)
-		embed.add_field(name="!set", value="!set <Command> <1Or0>", inline=False)
+		embed.add_field(name="!enable", value="!enable <kick>", inline=False)
+		embed.add_field(name="!disable", value="!disable <command>", inline=False)
+		embed.add_field(name="!set", value="!set <command> <channel>", inline=False)
 		await bot.say(embed=embed)
 
 #Kick user

@@ -19,29 +19,37 @@ async def on_read():
 #Message on user join
 @bot.async_event
 async def on_member_join(Member : discord.User):
-	if (await check_enabled('join',Member.server) == 1):
-		await bot.send_message(bot.get_channel(Member.server.id),"Welcome **"+Member.mention+"**")
+	if (await check_config('join',Member.server) == 1):	
+		with open('config.json', 'r') as j:
+			config = json.load(j)
+			await update_data(config, Member.server)
+		channelId = config[Member.server.id]["joinleave"]
+		await bot.send_message(bot.get_channel(channelId),"Welcome **"+Member.mention+"**")
 	else:
 		return
 #Message on user leave
 @bot.async_event
 async def on_member_remove(Member : discord.User):
-	if (await check_enabled('leave',Member.server) == 1):
-		await bot.send_message(bot.get_channel(Member.server.id),"**"+Member.name+"** has left the server")
+	if (await check_config('join',Member.server) == 1):	
+		with open('config.json', 'r') as j:
+			config = json.load(j)
+			await update_data(config, Member.server)
+		channelId = config[Member.server.id]["joinleave"]
+		await bot.send_message(bot.get_channel(channelId),"**"+Member.name+"** has left the server")
 	else:
 		return
 
 #Deletes messages that include key words, and discord invites
 @bot.event
 async def on_message(message, timeout=10):
-	if (await check_enabled('swear',message.author.server) == 1):
+	if (await check_config('swear',message.author.server) == 1):
 		message.content = message.content.lower()
 		for i in words:
 			if str(i) in message.content:
 				await bot.delete_message(message)
 				await bot.send_message(message.channel, "No swearing")
 				
-	elif ((await check_enabled('invite',message.author.server) == 1)and(message.author.server_permissions.administrator == False)):
+	elif ((await check_config('invite',message.author.server) == 1)and(message.author.server_permissions.administrator == False)):
 		if ("discord.gg" in message.content.lower()): 
 			await bot.delete_message(message)
 			await bot.send_message(message.channel, "Invites are not allowed in this server")
@@ -85,7 +93,7 @@ async def help(ctx, *args):
 #Kick user
 @bot.command (pass_context=True)
 async def kick(ctx, Member : discord.User):
-	if (await check_enabled('kick',Member.server) == 1):
+	if (await check_config('kick',Member.server) == 1):
 		if (Member.id == "227422944123551754" or Member.id == "405829095054770187"):
 			await bot.say("Unable to kick that user")
 		else:
@@ -103,7 +111,7 @@ async def kick(ctx, Member : discord.User):
 #Ban user	
 @bot.command (pass_context=True)
 async def ban(ctx, Member : discord.User):
-	if (await check_enabled('ban',Member.server) == 1):
+	if (await check_config('ban',Member.server) == 1):
 		if (Member.id == "227422944123551754" or Member.id == "405829095054770187"):
 			await bot.say("Unable to ban that user")
 		else:
@@ -120,7 +128,7 @@ async def ban(ctx, Member : discord.User):
 #Sends a dm to server's owner
 @bot.command (pass_context=True)		
 async def report(ctx, Member : discord.User, reportContent):
-	if (await check_enabled('report',Member.server) == 1):
+	if (await check_config('report',Member.server) == 1):
 		await bot.send_message(ctx.message.author, "Your report against **" + Member.name+"#"+Member.discriminator + "** has been submitted to the server's owner")
 		try:
 			reportServer = ctx.message.author.server
@@ -136,7 +144,7 @@ async def report(ctx, Member : discord.User, reportContent):
 #Purges messages	
 @bot.command (pass_context=True)		
 async def purge(ctx, numPurge : int,):
-	if (await check_enabled('purge',ctx.message.author.server) == 1):
+	if (await check_config('purge',ctx.message.author.server) == 1):
 		await bot.delete_message(ctx.message)
 		try:
 			await bot.purge_from(ctx.message.channel,limit=numPurge)
@@ -145,87 +153,124 @@ async def purge(ctx, numPurge : int,):
 	else:
 		await bot.say("Purge is disabled")
 
-#Sets commands as either enabled or disabled
+		
+#Sets commands as enabled
 @bot.command (pass_context=True)
-async def set(ctx, command : str, ifEnable : int):			
-	with open('enabled.json', 'r') as j:
-		enabled = json.load(j)
-		await update_data(enabled, ctx.message.server)
+async def enable(ctx, command : str):			
+	with open('config.json', 'r') as j:
+		config = json.load(j)
+		await update_data(config, ctx.message.server)
 	if (ctx.message.author.server_permissions.administrator == True):
-		if (command == "ban" and ifEnable == 1):
-			enabled[ctx.message.server.id]["ban"] = 1
+		if (command == "ban"):
+			config[ctx.message.server.id]["enabled"]["ban"] = 1
 			await bot.say("Ban has been enabled")
-		elif (command.lower() == 'ban' and ifEnable == 0):
-			enabled[ctx.message.server.id]['ban'] = 0
-			await bot.say("Ban has been disabled")
-		elif (command.lower() == 'kick' and ifEnable == 1):
-			enabled[ctx.message.server.id]['kick'] = 1
+		elif (command.lower() == 'kick'):
+			config[ctx.message.server.id]["enabled"]['kick'] = 1
 			await bot.say("Kick has been enabled")
-		elif (command.lower() == 'kick' and ifEnable == 0):
-			enabled[ctx.message.server.id]['kick'] = 0
-			await bot.say("Kick has been disabled")
-		elif (command.lower() == 'purge' and ifEnable == 1):
-			enabled[ctx.message.server.id]['purge'] = 1
+		elif (command.lower() == 'purge'):
+			config[ctx.message.server.id]["enabled"]['purge'] = 1
 			await bot.say("Purge has been enabled")
-		elif (command.lower() == 'purge' and ifEnable == 0):
-			enabled[ctx.message.server.id]['purge'] = 0
-			await bot.say("Purge has been disabled")
-		elif (command.lower() == 'join' and ifEnable == 1):
-			enabled[ctx.message.server.id]['join'] = 1
+		elif (command.lower() == 'join'):
+			config[ctx.message.server.id]["enabled"]['join'] = 1
 			await bot.say("Join messages has been enabled")
-		elif (command.lower() == 'join' and ifEnable == 0):
-			enabled[ctx.message.server.id]['join'] = 0
-			await bot.say("Join messages has been disabled")
-		elif (command.lower() == 'leave' and ifEnable == 1):
-			enabled[ctx.message.server.id]['leave'] = 1
+		elif (command.lower() == 'leave'):
+			config[ctx.message.server.id]["enabled"]['leave'] = 1
 			await bot.say("Leave messages has been enabled")
-		elif (command.lower() == 'leave' and ifEnable == 0):
-			enabled[ctx.message.server.id]['leave'] = 0		
-			await bot.say("Leave messages has been disabled")
-		elif (command.lower() == 'report' and ifEnable == 1):
-			enabled[ctx.message.server.id]['report'] = 1
-			await bot.say("Report has been enabled")
-		elif (command.lower() == 'report' and ifEnable == 0):
-			enabled[ctx.message.server.id]['report'] = 0
-			await bot.say("Report has been disabled")
-		elif (command.lower() == 'invite' and ifEnable == 1):
-			enabled[ctx.message.server.id]['invite'] = 1
+		elif (command.lower() == 'report'):
+			config[ctx.message.server.id]["enabled"]['report'] = 1
+			await bot.say("Reporting has been enabled")
+		elif (command.lower() == 'invite'):
+			config[ctx.message.server.id]["enabled"]['invite'] = 1
 			await bot.say("Invite blocking has been enabled")
-		elif (command.lower() == 'invite' and ifEnable == 0):
-			enabled[ctx.message.server.id]['invite'] = 0
-			await bot.say("Invite blocking has been disabled")
-		elif (command.lower() == 'swear' and ifEnable == 1):
-			enabled[ctx.message.server.id]['swear'] = 1
-			await bot.say("Swear prevention has been enabled")
-		elif (command.lower() == 'swear' and ifEnable == 0):
-			enabled[ctx.message.server.id]['swear'] = 0	
-			await bot.say("Swear prevention has been disabled")
+		elif (command.lower() == 'swear'):
+			config[ctx.message.server.id]["enabled"]['swear'] = 1
+			await bot.say("Swear blocking has been enabled")
 		else:
-			await bot.say("Invalid arguments, make sure to set the command to either 1 or 0. Do `!help set` for more info")
+			await bot.say("Invalid argument. Do `!help enable` for more info")
 	else:
 		bot.say("You must have administrator to enable or disable a command")
-	with open("enabled.json", "w") as j:
-		json.dump(enabled, j)
+	with open("config.json", "w") as j:
+		json.dump(config, j)
+		
+#Sets commands as disabled
+@bot.command (pass_context=True)
+async def disable(ctx, command : str):			
+	with open('config.json', 'r') as j:
+		config = json.load(j)
+		await update_data(config, ctx.message.server)
+	if (ctx.message.author.server_permissions.administrator == True):
+		if (command == "ban"):
+			config[ctx.message.server.id]["enabled"]["ban"] = 0
+			await bot.say("Ban has been disabled")
+		elif (command.lower() == 'kick'):
+			config[ctx.message.server.id]["enabled"]['kick'] = 0
+			await bot.say("Kick has been disabled")	
+		elif (command.lower() == 'purge'):
+			config[ctx.message.server.id]["enabled"]['purge'] = 0
+			await bot.say("Purge has been disabled")
+		elif (command.lower() == 'join'):
+			config[ctx.message.server.id]["enabled"]['join'] = 0
+			await bot.say("Join messages has been disabled")
+		elif (command.lower() == 'leave'):
+			config[ctx.message.server.id]["enabled"]['leave'] = 0
+			await bot.say("Leave messages has been disabled")
+		elif (command.lower() == 'report'):
+			config[ctx.message.server.id]["enabled"]['report'] = 0
+			await bot.say("Reporting has been disabled")
+		elif (command.lower() == 'invite'):
+			config[ctx.message.server.id]["enabled"]['invite'] = 0
+			await bot.say("Invite blocking has been disabled")
+		elif (command.lower() == 'swear'):
+			config[ctx.message.server.id]["enabled"]['swear'] = 0
+			await bot.say("Swear blocking has been disabled")
+		else:
+			await bot.say("Invalid argument. Do `!help disable` for more info")
+	else:
+		bot.say("You must have administrator to enable or disable a command")
+	with open("config.json", "w") as j:
+		json.dump(config, j)		
+				
+#Sets commands as either config or disabled
+@bot.command (pass_context=True)
+async def set(ctx, command : str, input : str):		
+	print()
+	with open('config.json', 'r') as j:
+		config = json.load(j)
+		await update_data(config, ctx.message.server)
+	if (ctx.message.author.server_permissions.administrator == True):
+
+		if (command.lower() == 'join' or command.lower() == 'leave'):
+			channelId = input.replace('#', '').replace('<', '').replace('>', '')
+			config[ctx.message.server.id]["joinleave"]= channelId
+			await bot.say("Set join & leave messages channel to "+bot.get_channel(str(channelId)).mention)
+		else:
+			await bot.say("Invalid argument. Do `!help set` for more info")
+	else:
+		bot.say("You must have administrator to enable or disable a command")
+	with open("config.json", "w") as j:
+		json.dump(config, j)
 
 #Function to update json file		
-async def update_data(enabled, server):
-	if not server.id in enabled:
-		enabled[server.id] = {}
-		enabled[server.id]['ban'] = 1
-		enabled[server.id]['kick'] = 1
-		enabled[server.id]['purge'] = 1
-		enabled[server.id]['join'] = 1
-		enabled[server.id]['leave'] = 1
-		enabled[server.id]['report'] = 0	
-		enabled[server.id]['invite'] = 0
-		enabled[server.id]['swear'] = 1
+async def update_data(config, server):
+	if not server.id in config:
+		config[server.id] = {}
+		config[server.id]["enabled"] = {}
+		config[server.id]["enabled"]['ban'] = 1
+		config[server.id]["enabled"]['kick'] = 1
+		config[server.id]["enabled"]['purge'] = 1
+		config[server.id]["enabled"]['join'] = 1
+		config[server.id]["enabled"]['leave'] = 1
+		config[server.id]["enabled"]['report'] = 0	
+		config[server.id]["enabled"]['invite'] = 0
+		config[server.id]["enabled"]['swear'] = 1
+		config[server.id]["joinleave"] = ""
 
-#Function to make it easier for commands to see if they are enabled
-async def check_enabled(command, server):
-	with open('enabled.json', 'r') as j:
-		enabled = json.load(j)
-	await update_data(enabled, server)
-	return enabled[server.id][command]
+#Function to make it easier for commands to see if they are config
+async def check_config(command, server):
+	with open('config.json', 'r') as j:
+		config = json.load(j)
+	await update_data(config, server)
+	return config[server.id]["enabled"][command]
 	
 print ('Ready\n')
 print ('(ᵔᴥᵔ)\n')

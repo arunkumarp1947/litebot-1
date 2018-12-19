@@ -7,7 +7,6 @@ from discord.ext.commands import Bot
 
 print ('Lite-Bot is activating')
 
-
 bot = Bot(command_prefix="!")
 #prefix is !
 
@@ -24,6 +23,7 @@ async def on_member_join(Member : discord.User):
 		await bot.send_message(bot.get_channel(channelId),"Welcome **"+Member.mention+"**")
 	else:
 		return
+
 #Message on user leave
 @bot.async_event
 async def on_member_remove(Member : discord.User):
@@ -37,7 +37,7 @@ async def on_member_remove(Member : discord.User):
 @bot.event
 async def on_message(message, timeout=10):
 	if (message.channel.is_private==False):
-		if (await check_config('swear',message.author.server, False) == 1):
+		if (await check_config('swear', message.author.server, False) == 1):
 			message.content = message.content.lower()
 			for i in words:
 				if str(i) in message.content:
@@ -238,19 +238,20 @@ async def disable(ctx, command : str):
 	with open("config.json", "w") as j:
 		json.dump(config, j)		
 				
-#Sets commands as either config or disabled
+#Sets commands 
 @bot.command (pass_context=True)
 async def set(ctx, command : str, input : str):		
-	print()
 	with open('config.json', 'r') as j:
 		config = json.load(j)
 		await update_data(config, ctx.message.server)
+
 	if (ctx.message.author.server_permissions.administrator == True):
 
 		if (command.lower() == 'join' or command.lower() == 'leave'):
 			channelId = input.replace('#', '').replace('<', '').replace('>', '')
 			config[ctx.message.server.id]["joinleaveChannel"]= channelId
-			await bot.say("Set join & leave messages channel to "+bot.get_channel(str(channelId)).mention)
+			await bot.say("Set join & leave messages channel to "+input)
+			
 		elif (command.lower() == 'report'):
 			channelId = input.replace('<', '').replace('>', '')
 			config[ctx.message.server.id]["reportChannel"]= channelId
@@ -276,8 +277,9 @@ async def update_data(config, server):
 		config[server.id]["enabled"]['invite'] = 0
 		config[server.id]["enabled"]['swear'] = 1
 		config[server.id]["joinleaveChannel"] = ""
+		config[server.id]["reportChannel"] = ""
 
-#Function to make it easier for commands to see if they are config
+#Function to make it easier for commands to check their config
 async def check_config(command, server, outsideEnabled):
 	with open('config.json', 'r') as j:
 		config = json.load(j)

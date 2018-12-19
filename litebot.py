@@ -19,22 +19,16 @@ async def on_read():
 #Message on user join
 @bot.async_event
 async def on_member_join(Member : discord.User):
-	if (await check_config('join',Member.server) == 1):	
-		with open('config.json', 'r') as j:
-			config = json.load(j)
-			await update_data(config, Member.server)
-		channelId = config[Member.server.id]["joinleave"]
+	if (await check_config('join',Member.server, False) == 1):	
+		channelId = check_config('joinleave',Member.server, True)
 		await bot.send_message(bot.get_channel(channelId),"Welcome **"+Member.mention+"**")
 	else:
 		return
 #Message on user leave
 @bot.async_event
 async def on_member_remove(Member : discord.User):
-	if (await check_config('join',Member.server) == 1):	
-		with open('config.json', 'r') as j:
-			config = json.load(j)
-			await update_data(config, Member.server)
-		channelId = config[Member.server.id]["joinleave"]
+	if (await check_config('join',Member.server, False) == 1):	
+		channelId = check_config('joinleave',Member.server, True)
 		await bot.send_message(bot.get_channel(channelId),"**"+Member.name+"** has left the server")
 	else:
 		return
@@ -42,14 +36,14 @@ async def on_member_remove(Member : discord.User):
 #Deletes messages that include key words, and discord invites
 @bot.event
 async def on_message(message, timeout=10):
-	if (await check_config('swear',message.author.server) == 1):
+	if (await check_config('swear',message.author.server, False) == 1):
 		message.content = message.content.lower()
 		for i in words:
 			if str(i) in message.content:
 				await bot.delete_message(message)
 				await bot.send_message(message.channel, "No swearing")
 				
-	elif ((await check_config('invite',message.author.server) == 1)and(message.author.server_permissions.administrator == False)):
+	elif ((await check_config('invite',message.author.server, False) == 1)and(message.author.server_permissions.administrator == False)):
 		if ("discord.gg" in message.content.lower()): 
 			await bot.delete_message(message)
 			await bot.send_message(message.channel, "Invites are not allowed in this server")
@@ -80,7 +74,9 @@ async def help(ctx, *args):
 	elif ("".join(args) == "report"):
 		await bot.say("Sends a report to the server's owner, requires double quotes around the report content\n`!report @user#0000 \"Stealing the Village gold\"`")
 	elif ("".join(args) == "set"):
-		await bot.say("Enables or disables a command, 1 = enable, 0 = disable.\n`!set kick 0`")
+		await bot.say("Sets a command to a value\n `!set join #general`")
+	elif ("".join(args) == "enable"or"".join(args) == "disable"):
+		await bot.say("Enables or disables a command\n `!enable kick`")
 	else:
 		embed=discord.Embed(title="Help")
 		embed.add_field(name="!ban", value="!ban @user#0000", inline=False)
@@ -93,7 +89,7 @@ async def help(ctx, *args):
 #Kick user
 @bot.command (pass_context=True)
 async def kick(ctx, Member : discord.User):
-	if (await check_config('kick',Member.server) == 1):
+	if (await check_config('kick',Member.server, False) == 1):
 		if (Member.id == "227422944123551754" or Member.id == "405829095054770187"):
 			await bot.say("Unable to kick that user")
 		else:
@@ -111,7 +107,7 @@ async def kick(ctx, Member : discord.User):
 #Ban user	
 @bot.command (pass_context=True)
 async def ban(ctx, Member : discord.User):
-	if (await check_config('ban',Member.server) == 1):
+	if (await check_config('ban',Member.server, False) == 1):
 		if (Member.id == "227422944123551754" or Member.id == "405829095054770187"):
 			await bot.say("Unable to ban that user")
 		else:
@@ -128,7 +124,7 @@ async def ban(ctx, Member : discord.User):
 #Sends a dm to server's owner
 @bot.command (pass_context=True)		
 async def report(ctx, Member : discord.User, reportContent):
-	if (await check_config('report',Member.server) == 1):
+	if (await check_config('report',Member.server, False) == 1):
 		await bot.send_message(ctx.message.author, "Your report against **" + Member.name+"#"+Member.discriminator + "** has been submitted to the server's owner")
 		try:
 			reportServer = ctx.message.author.server
@@ -144,7 +140,7 @@ async def report(ctx, Member : discord.User, reportContent):
 #Purges messages	
 @bot.command (pass_context=True)		
 async def purge(ctx, numPurge : int,):
-	if (await check_config('purge',ctx.message.author.server) == 1):
+	if (await check_config('purge',ctx.message.author.server, False) == 1):
 		await bot.delete_message(ctx.message)
 		try:
 			await bot.purge_from(ctx.message.channel,limit=numPurge)
@@ -266,12 +262,15 @@ async def update_data(config, server):
 		config[server.id]["joinleave"] = ""
 
 #Function to make it easier for commands to see if they are config
-async def check_config(command, server):
+async def check_config(command, server, outsideEnabled):
 	with open('config.json', 'r') as j:
 		config = json.load(j)
 	await update_data(config, server)
-	return config[server.id]["enabled"][command]
-	
+	if (outsideEnabled == False):
+		return config[server.id]["enabled"][command]
+	else:
+		return config[server.id][command]
+		
 print ('Ready\n')
 print ('(ᵔᴥᵔ)\n')
 

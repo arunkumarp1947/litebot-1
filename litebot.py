@@ -37,13 +37,24 @@ async def on_member_remove(Member : discord.User):
 @bot.event
 async def on_message(message, timeout=10):
 	if (message.channel.is_private==False):
-		if (await check_config('swear', message.author.server, False) == 1):
+		if (await check_config('swear', message.author.server, False) >= 1):
 			message.content = message.content.lower()
-			for i in words:
-				if str(i) in message.content:
-					await bot.delete_message(message)
-					await bot.send_message(message.channel, "No swearing")
-				
+			toDelete = False
+			for i in words1:
+				if ((str(i) in message.content) and (await check_config('swear', message.author.server, False) >= 1)):
+					toDelete = True
+					
+			for i in words2:
+				if ((str(i) in message.content) and (await check_config('swear', message.author.server, False) >= 2)):
+					toDelete = True
+					
+			for i in words3:
+				if ((str(i) in message.content) and (await check_config('swear', message.author.server, False) >= 3)):	
+					toDelete = True
+					
+			if (toDelete == True):
+				await bot.delete_message(message)
+				await bot.send_message(message.channel, "No swearing")
 		elif ((await check_config('invite',message.author.server, False) == 1)and(message.author.server_permissions.administrator == False)):
 			if ("discord.gg" in message.content.lower()): 
 				await bot.delete_message(message)
@@ -139,7 +150,7 @@ async def report(ctx, Member : discord.User, reportContent):
 				channelId = channelId.replace('#', '')
 				reportSendLocation = bot.get_channel(channelId)
 			elif "@" in channelId: 
-				channelId = channelId.replace('@', '').replace('!', '')
+				channelId = channelId.replace('@', '')
 				reportSendLocation = await bot.get_user_info(channelId)
 			
 			embed=discord.Embed(title="Submitted by "+ctx.message.author.name+"#"+ctx.message.author.discriminator, description=reportContent)
@@ -252,16 +263,22 @@ async def set(ctx, command : str, input : str):
 
 		if (command.lower() == 'join' or command.lower() == 'leave' or command.lower() == 'joinleave'):
 			channelId = input.replace('#', '').replace('<', '').replace('>', '')
-			config[ctx.message.server.id]["joinleaveChannel"]= channelId
-			if (bot.get_channel(channelId)=="None"):
+
+			if (bot.get_channel(channelId)==None):
 				await bot.say("Not a valid channel")
 			else:
 				await bot.say("Set join & leave messages channel to "+input)
+				config[ctx.message.server.id]["joinleaveChannel"]= channelId
 			
 		elif (command.lower() == 'report'):
-			channelId = input.replace('<', '').replace('>', '')
-			config[ctx.message.server.id]["reportChannel"]= channelId
+			channelId = input.replace('<', '').replace('>', '').replace('!', '')
 			await bot.say("Set report messages channel to "+input)
+			config[ctx.message.server.id]["reportChannel"]= channelId
+			
+		elif (command.lower() == 'swear'):
+			config[ctx.message.server.id]["enabled"]["swear"]= int(input)
+			await bot.say("Set swear blocking level to "+input)
+		
 		else:
 			await bot.say("Invalid argument. Do `!help set` for more info")
 	else:
@@ -299,8 +316,12 @@ print ('Ready\n')
 print ('(ᵔᴥᵔ)\n')
 
 #Opens words file
-f = open('words.txt', 'r')
-words = f.read().lower().splitlines()
+f = open('words1.txt', 'r')
+words1 = f.read().lower().splitlines()
+f = open('words2.txt', 'r')
+words2 = f.read().lower().splitlines()
+f = open('words3.txt', 'r')
+words3 = f.read().lower().splitlines()
 
 #Opens discord key file
 f = open('key.config', 'r')

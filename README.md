@@ -13,7 +13,7 @@ Litebot is a dicord bot for simple moderation. It can delete messages containing
 - ☑ Better config - Set channel for join/leave messages
 - ☑ Better Report System (Set which channel or user the reports go to)
 - ☑ Better Swear blocking system (Different levels of swear blocking)
-- ☐ Add verification system for report channel
+- ☐ Add verification system for channels (Check on !set to see if the channel works)
 - ☐ New prefix
 - ☐ Roles from reaction
 
@@ -21,3 +21,17 @@ Litebot is a dicord bot for simple moderation. It can delete messages containing
 - ☐ Music System
 - ☐ Purge specific user's messages
 - ☐ Currency
+
+# Docs
+
+### Join Message
+
+### Leave Message
+
+### Swear Blocking
+
+### Invite Blocking
+
+### Kick
+
+### Ban

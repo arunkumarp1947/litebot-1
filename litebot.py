@@ -316,11 +316,11 @@ print ('Ready\n')
 print ('(ᵔᴥᵔ)\n')
 
 #Opens words file
-f = open('words1.txt', 'r')
+f = open('words/words1.txt', 'r')
 words1 = f.read().lower().splitlines()
-f = open('words2.txt', 'r')
+f = open('words/words2.txt', 'r')
 words2 = f.read().lower().splitlines()
-f = open('words3.txt', 'r')
+f = open('words/words3.txt', 'r')
 words3 = f.read().lower().splitlines()
 
 #Opens discord key file

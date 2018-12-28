@@ -407,8 +407,11 @@ async def set(ctx, command : str, input : str):
 					await bot.say("Invalid channel name")
 				
 			elif (command.lower() == 'swear'):
-				config[ctx.message.server.id]["enabled"]["swear"]= int(input)
-				await bot.say("Set swear blocking level to "+input)
+				if (int(input)>=0 and int(input)<=3):
+					config[ctx.message.server.id]["enabled"]["swear"]= int(input)
+					await bot.say("Set swear blocking level to "+input)
+				else:
+					await bot.say("Invalid level, must be between 0-3")
 			
 			else:
 				await bot.say("Invalid argument. Do `!help set` for more info")

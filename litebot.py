@@ -305,7 +305,47 @@ async def disable(ctx, command : str):
 	except:
 		await bot.say("Error")
 		print("Error")
-				
+
+#Sets commands 
+@bot.command (pass_context=True)
+async def check(ctx):
+	checkString = ""
+	
+	#Join & Leave Messages
+	joinLeaveCommands = ["Join", "Leave"]
+	for i in joinLeaveCommands:
+		if (await check_config(i.lower(),ctx.message.server, False) == 1):
+			cmdEnabled = "Enabled"
+		else:
+			cmdEnabled = "Disabled"
+		stringAddition = (i +" messages are **"+cmdEnabled+"**\n")
+		checkString = checkString + stringAddition
+
+	#Kick Ban Purge & Report
+	basicCommands = ["Kick","Ban","Purge","Report"]	
+	for i in basicCommands:
+		if (await check_config(i.lower(),ctx.message.server, False) == 1):
+			cmdEnabled = "Enabled"
+		else:
+			cmdEnabled = "Disabled"
+		stringAddition = (i +" is **"+cmdEnabled+"**\n")
+		checkString = checkString + stringAddition
+		
+	#Invite Blocking
+	if (await check_config('invite',ctx.message.server, False) == 1):
+		cmdEnabled = "Enabled"
+	else:
+		cmdEnabled = "Disabled"
+	stringAddition = ("Invite blocking is **"+cmdEnabled+"**\n")
+	checkString = checkString + stringAddition
+	
+	#Swear Blocking
+	cmd2Enabled = await check_config('swear',ctx.message.server, False)
+	swearEnabled = ("Swear blocking is set to **"+str(cmd2Enabled)+"**")
+	checkString = checkString + swearEnabled
+	
+	await bot.say(checkString)
+		
 #Sets commands 
 @bot.command (pass_context=True)
 async def set(ctx, command : str, input : str):	
@@ -371,13 +411,16 @@ async def update_data(config, server):
 
 #Function to make it easier for commands to check their config
 async def check_config(command, server, outsideEnabled):
-	with open('config.json', 'r') as j:
-		config = json.load(j)
-	await update_data(config, server)
-	if (outsideEnabled == False):
-		return config[server.id]["enabled"][command]
-	else:
-		return config[server.id][command]
+	try:
+		with open('config.json', 'r') as j:
+			config = json.load(j)
+		await update_data(config, server)
+		if (outsideEnabled == False):
+			return config[server.id]["enabled"][command]
+		else:
+			return config[server.id][command]
+	except:
+		return
 		
 print ('Ready\n')
 print ('(ᵔᴥᵔ)\n')

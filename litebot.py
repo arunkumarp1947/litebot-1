@@ -309,42 +309,63 @@ async def disable(ctx, command : str):
 #Sets commands 
 @bot.command (pass_context=True)
 async def check(ctx):
-	checkString = ""
-	
-	#Join & Leave Messages
-	joinLeaveCommands = ["Join", "Leave"]
-	for i in joinLeaveCommands:
-		if (await check_config(i.lower(),ctx.message.server, False) == 1):
-			cmdEnabled = "Enabled"
-		else:
-			cmdEnabled = "Disabled"
-		stringAddition = (i +" messages are **"+cmdEnabled+"**\n")
-		checkString = checkString + stringAddition
+	try:
+		checkString = ""
+		
+		#Join & Leave Messages
+		joinLeaveCommands = ["Join", "Leave"]
+		for i in joinLeaveCommands:
+			if (await check_config(i.lower(),ctx.message.server, False) == 1):
+				cmdEnabled = "Enabled"
+			else:
+				cmdEnabled = "Disabled"
+			stringAddition = (i +" messages are **"+cmdEnabled+"**\n")
+			checkString = checkString + stringAddition
 
-	#Kick Ban Purge & Report
-	basicCommands = ["Kick","Ban","Purge","Report"]	
-	for i in basicCommands:
-		if (await check_config(i.lower(),ctx.message.server, False) == 1):
+		#Kick Ban Purge & Report
+		basicCommands = ["Kick","Ban","Purge","Report"]	
+		for i in basicCommands:
+			if (await check_config(i.lower(),ctx.message.server, False) == 1):
+				cmdEnabled = "Enabled"
+			else:
+				cmdEnabled = "Disabled"
+			stringAddition = (i +" is **"+cmdEnabled+"**\n")
+			checkString = checkString + stringAddition
+			
+		#Invite Blocking
+		if (await check_config('invite',ctx.message.server, False) == 1):
 			cmdEnabled = "Enabled"
 		else:
 			cmdEnabled = "Disabled"
-		stringAddition = (i +" is **"+cmdEnabled+"**\n")
+		stringAddition = ("Invite blocking is **"+cmdEnabled+"**\n")
 		checkString = checkString + stringAddition
 		
-	#Invite Blocking
-	if (await check_config('invite',ctx.message.server, False) == 1):
-		cmdEnabled = "Enabled"
-	else:
-		cmdEnabled = "Disabled"
-	stringAddition = ("Invite blocking is **"+cmdEnabled+"**\n")
-	checkString = checkString + stringAddition
-	
-	#Swear Blocking
-	cmd2Enabled = await check_config('swear',ctx.message.server, False)
-	swearEnabled = ("Swear blocking is set to **"+str(cmd2Enabled)+"**")
-	checkString = checkString + swearEnabled
-	
-	await bot.say(checkString)
+		#Swear Blocking
+		cmd2Enabled = await check_config('swear',ctx.message.server, False)
+		swearEnabled = ("Swear blocking is set to **"+str(cmd2Enabled)+"**")
+		checkString = checkString + swearEnabled
+		
+		await bot.say(checkString)
+		#Channels for admins
+		if (ctx.message.author.server_permissions.administrator == True):
+			ChannelString = ""
+			channelId = await check_config('reportChannel',ctx.message.server, True)
+			if "#" in channelId:
+				channelId = channelId.replace('#', '')
+				reportSendLocation = bot.get_channel(channelId)
+				if (await check_config('report',ctx.message.server, False)==1):
+					ChannelString = ("Report channel is set to "+reportSendLocation.mention)
+			elif "@" in channelId: 
+				channelId = channelId.replace('@', '')
+				reportSendLocation = await bot.get_user_info(channelId)
+				ChannelString = ("Report channel is set to **"+reportSendLocation.name+"#"+reportSendLocation.discriminator+"**")
+			channelId = await check_config('joinleaveChannel',ctx.message.server, True)
+			joinleaveChannel = bot.get_channel(channelId)
+			ChannelString = ChannelString + "\nJoin/Leave message channel is set to "+joinleaveChannel.mention
+			await bot.say(ChannelString)
+		
+	except:
+		await boy.say("Error getting server settings")
 		
 #Sets commands 
 @bot.command (pass_context=True)
@@ -367,8 +388,20 @@ async def set(ctx, command : str, input : str):
 				
 			elif (command.lower() == 'report'):
 				channelId = input.replace('<', '').replace('>', '').replace('!', '')
-				await bot.say("Set report messages channel to "+input)
-				config[ctx.message.server.id]["reportChannel"]= channelId
+				if (bot.get_channel(channelId.replace('#', ''))==None):
+					invalidChannel = False
+					try:
+						await bot.get_user_info(channelId.replace('@', ''))
+					except discord.NotFound:
+						invalidChannel = True
+				else:
+					invalidChannel = False
+				
+				if (invalidChannel==False):
+					await bot.say("Set report messages channel to "+input)
+					config[ctx.message.server.id]["reportChannel"]= channelId
+				else:
+					await bot.say("Invalid channel name")
 				
 			elif (command.lower() == 'swear'):
 				config[ctx.message.server.id]["enabled"]["swear"]= int(input)
@@ -380,7 +413,7 @@ async def set(ctx, command : str, input : str):
 			bot.say("You must have administrator to enable or disable a command")
 		with open("config.json", "w") as j:
 			json.dump(config, j)
-	except:
+	except discord.HTTPException:
 		await bot.say("Error")
 		print("Error")
 

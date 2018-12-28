@@ -59,8 +59,7 @@ Litebot is a dicord bot for simple moderation. It can delete messages containing
 ### Report
 - Sends a report to wherever the report channel is set to
 - Use `!set report #reports` to set the report channel to either a channel or a user
-- Use `!report @username#0000 "Sample report content"` to report
-- Report content must be in quotation marks if the report content is multiple words
+- Use `!report @username#0000 Sample report content` to report
 ### Purge
 - Deletes the specified number of messages
 - User must have delete message perm or admin perm

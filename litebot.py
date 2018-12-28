@@ -176,7 +176,7 @@ async def ban(ctx, Member : discord.User):
 		print("Error")
 #Sends a report to the report channel
 @bot.command (pass_context=True)		
-async def report(ctx, Member : discord.User, reportContent):
+async def report(ctx, Member : discord.User, *args):
 	try:
 		if (await check_config('report',Member.server, False) == 1):
 			await bot.send_message(ctx.message.author, "Your report against **"+Member.name+"#"+Member.discriminator+"** has been submitted to the server's owner")
@@ -190,7 +190,7 @@ async def report(ctx, Member : discord.User, reportContent):
 					channelId = channelId.replace('@', '')
 					reportSendLocation = await bot.get_user_info(channelId)
 				
-				embed=discord.Embed(title="Submitted by "+ctx.message.author.name+"#"+ctx.message.author.discriminator, description=reportContent)
+				embed=discord.Embed(title="Submitted by "+ctx.message.author.name+"#"+ctx.message.author.discriminator, description=' '.join(args))
 				embed.set_author(name="Report against "+Member.name+"#"+Member.discriminator)
 				await bot.send_message(reportSendLocation, embed=embed)
 			except discord.HTTPException:

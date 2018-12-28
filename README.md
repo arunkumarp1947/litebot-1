@@ -18,7 +18,8 @@ Litebot is a dicord bot for simple moderation. It can delete messages containing
 - ☑ Better Swear blocking system (Different levels of swear blocking)
 - ☑ Add support for minimal permissions
 - ☑ Add !check command to see what commands are enabled
-- ☐ Add verification system for channels (Check on !set to see if the channel works)
+- ☐ Add verification system for channels (Check after !set to see if the channel is valid)
+- ☐ Add report & join/leave channels to !check
 - ☐ Clean up Code
 - ☐ New prefix
 

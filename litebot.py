@@ -99,10 +99,10 @@ async def on_command_error(error, ctx):
 @bot.command (pass_context=True)
 async def help(ctx, *args):
 	try:
-		if ("".join(args) == "ban"):
-			await bot.say("Bans an user and deletes their messages from the past 3 days\n`!ban @user#0000`")
-		elif ("".join(args) == "kick"):
+		if ("".join(args) == "kick"):
 			await bot.say("Kicks an user\n`!kick @user#0000`")
+		elif ("".join(args) == "ban"):
+			await bot.say("Bans an user and deletes their messages from the past 3 days\n`!ban @user#0000`")
 		elif ("".join(args) == "purge"):
 			await bot.say("Mass deletes messages\n`!purge 30`")
 		elif ("".join(args) == "report"):
@@ -111,15 +111,18 @@ async def help(ctx, *args):
 			await bot.say("Sets a command to a value\n `!set join #general`")
 		elif ("".join(args) == "enable"or"".join(args) == "disable"):
 			await bot.say("Enables or disables a command\n `!enable kick`")
+		elif ("".join(args) == "check"):
+			await bot.say("Checks what the server config is set to\n `!check`")
 		else:
 			embed=discord.Embed(title="Help")
-			embed.add_field(name="!ban", value="!ban @user#0000", inline=False)
 			embed.add_field(name="!kick", value="!kick @user#0000", inline=False)
+			embed.add_field(name="!ban", value="!ban @user#0000", inline=False)
 			embed.add_field(name="!purge", value="!purge <NumberOfMessages>", inline=False)
 			embed.add_field(name="!report", value="!report @user#0000 \"Report Content\"", inline=False)
 			embed.add_field(name="!enable", value="!enable <kick>", inline=False)
 			embed.add_field(name="!disable", value="!disable <command>", inline=False)
 			embed.add_field(name="!set", value="!set <command> <channel>", inline=False)
+			embed.add_field(name="!check", value="!check", inline=False)
 			await bot.say(embed=embed)
 	except:
 		await bot.say("Error")
@@ -431,11 +434,11 @@ async def update_data(config, server):
 	if not server.id in config:
 		config[server.id] = {}
 		config[server.id]["enabled"] = {}
-		config[server.id]["enabled"]['ban'] = 1
-		config[server.id]["enabled"]['kick'] = 1
-		config[server.id]["enabled"]['purge'] = 1
 		config[server.id]["enabled"]['join'] = 1
 		config[server.id]["enabled"]['leave'] = 1
+		config[server.id]["enabled"]['kick'] = 1
+		config[server.id]["enabled"]['ban'] = 1
+		config[server.id]["enabled"]['purge'] = 1
 		config[server.id]["enabled"]['report'] = 0	
 		config[server.id]["enabled"]['invite'] = 0
 		config[server.id]["enabled"]['swear'] = 1

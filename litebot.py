@@ -44,7 +44,7 @@ async def on_member_remove(Member : discord.User):
 #Deletes messages that include key words, and discord invites
 @bot.event
 async def on_message(message, timeout=10):
-	await bot.change_presence(game=discord.Game(name='Protecting the Server'))
+	await bot.change_presence(game=discord.Game(name='Protecting the Server | !help'))
 	unableToCheckMessages = False
 	if (message.channel.is_private==False and (message.author != message.server.me)):
 		if (await check_config('swear', message.author.server, False) >= 1):
@@ -68,13 +68,15 @@ async def on_message(message, timeout=10):
 					await bot.send_message(message.channel, "No swearing")
 			else:
 				unableToCheckMessages = True			
-		elif ((await check_config('invite',message.author.server, False) == 1)and(message.author.server_permissions.administrator == False)):
+		if ((await check_config('invite',message.author.server, False) == 1)and(message.author.server_permissions.administrator == False)):
 			if (message.server.me.server_permissions.manage_messages == True or message.server.me.server_permissions.administrator == True):
-				if ("discord.gg" in message.content.lower()): 
+				if ("discord.gg" in message.content.lower()):
 					await bot.delete_message(message)
 					await bot.send_message(message.channel, "Invites are not allowed in this server")
 			else:
 				unableToCheckMessages = True
+		if "<@405829095054770187>" in message.content:
+			await bot.send_message(message.channel, "Hi, I'm lite-bot, a administrative bot designed to make running a server easier. My prefix is `!` and you can see my commands using `!help`")
 		if (unableToCheckMessages):
 			await bot.send_message(message.channel,"Unable to check messages as I do not have permission to delete messages.\nDisabling Swear Blocking and Invite Blocking now")
 			await bot_disable(message.server, 'swear')

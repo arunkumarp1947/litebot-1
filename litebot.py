@@ -44,6 +44,7 @@ async def on_member_remove(Member : discord.User):
 #Deletes messages that include key words, and discord invites
 @bot.event
 async def on_message(message, timeout=10):
+	await bot.change_status(game=discord.Game(name='Protecting the Server'))
 	unableToCheckMessages = False
 	if (message.channel.is_private==False and (message.author != message.server.me)):
 		if (await check_config('swear', message.author.server, False) >= 1):

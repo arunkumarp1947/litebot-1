@@ -19,11 +19,11 @@ Litebot is a dicord bot for simple moderation. It can delete messages containing
 - ☑ Add support for minimal permissions
 - ☑ Add !check command to see what commands are enabled
 - ☑ Add verification system for channels (Check on !set to see if the channel works)
+- ☐ Roles from reaction
 - ☐ Clean up Code
 - ☐ New prefix
 
 ## Most Likely not going to do
-- ☐ Roles from reaction
 - ☐ Music System
 - ☐ Purge specific user's messages
 

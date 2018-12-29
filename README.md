@@ -2,7 +2,7 @@
 Litebot is a dicord bot for simple moderation. It can delete messages containing banned words, announce when users join or leave the server, report a user to the owner and more. More features are coming soon
 ## Invite
 
-[Invite Litebot Here](https://discordapp.com/oauth2/authorize?client_id=405829095054770187&scope=bot&permissions=11278&redirect_uri=https%3A%2F%2Fgithub.com%2FJX003%2Flitebot%2F)
+[Invite Litebot Here](https://discordapp.com/oauth2/authorize?client_id=405829095054770187&scope=bot&permissions=11278)
 
 ## To do
 - ☑ Deletes messages containing any words in words.txt

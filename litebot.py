@@ -460,7 +460,7 @@ async def setroles(ctx, *args):
 	setRoles = " ".join(args).split(',')
 	if (ctx.message.author.server_permissions.administrator ):
 		for i in setRoles:
-			if (discord.utils.get(ctx.message.server.roles, name=i))==None:
+			if (((discord.utils.get(ctx.message.server.roles, name=i))==None)or(setRoles.count(i)>1)):
 				await bot.say("Invalid role(s)")
 				return
 		a = 0

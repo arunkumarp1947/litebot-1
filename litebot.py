@@ -211,13 +211,13 @@ async def report(ctx, Member : discord.User, *args):
 				embed.set_author(name="Report against "+Member.name+"#"+Member.discriminator)
 				await bot.send_message(reportSendLocation, embed=embed)
 			except:
+				await bot.delete_message(ctx.message)
 				await bot.send_message(ctx.message.author, "Your report against **" + Member.name + "** was unable to be sent")
 			await bot.delete_message(ctx.message)
 		else:
 			await bot.say("Report is disabled")
 	except:
-		await bot.say("Error")
-		print("Error")
+		return
 #Purges messages
 @bot.command (pass_context=True)#Need to add perm checker
 async def purge(ctx, numPurge : int,):

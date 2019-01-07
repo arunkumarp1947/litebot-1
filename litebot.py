@@ -118,6 +118,10 @@ async def help(ctx, *args):
 			await bot.say("Enables or disables a command\n `!enable kick`")
 		elif ("".join(args) == "check"):
 			await bot.say("Checks what the server config is set to\n `!check`")
+		elif ("".join(args) == "role"):
+			await bot.say("Sets you to a role\n `!role role1`")
+		elif ("".join(args) == "setroles"):
+			await bot.say("Sets the roles a user can set themselves to\n `!setroles role1,a role,role2`")
 		else:
 			embed=discord.Embed(title="Help")
 			embed.add_field(name="!kick", value="!kick @user#0000", inline=False)
@@ -128,6 +132,8 @@ async def help(ctx, *args):
 			embed.add_field(name="!disable", value="!disable <command>", inline=False)
 			embed.add_field(name="!set", value="!set <command> <channel>", inline=False)
 			embed.add_field(name="!check", value="!check", inline=False)
+			embed.add_field(name="!role", value="!role <role name>", inline=False)
+			embed.add_field(name="!setroles", value="!setroles <rolename>,<another rolename>", inline=False)
 			await bot.say(embed=embed)
 	except:
 		await bot.say("Error")

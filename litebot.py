@@ -436,18 +436,21 @@ async def set(ctx, command : str, input : str):
 
 @bot.command (pass_context=True)
 async def setroles(ctx, *args):
-	for i in args:
-		if (discord.utils.get(ctx.message.server.roles, name=i))==None:
-			await bot.say("Invalid role(s)")
-			return
-		
-	with open('config.json', 'r') as j:
-		config = json.load(j)
-		await update_data(config, ctx.message.server)
-	config[ctx.message.server.id]["role"]= args
-	with open("config.json", "w") as j:
-		json.dump(config, j)
-	await bot.say("Succesfully set roles")
+	if (ctx.message.author.server_permissions.administrator ):
+		for i in args:
+			if (discord.utils.get(ctx.message.server.roles, name=i))==None:
+				await bot.say("Invalid role(s)")
+				return
+			
+		with open('config.json', 'r') as j:
+			config = json.load(j)
+			await update_data(config, ctx.message.server)
+		config[ctx.message.server.id]["role"]= args
+		with open("config.json", "w") as j:
+			json.dump(config, j)
+		await bot.say("Succesfully set roles")
+	else:
+		await bot.say("You must have admin to change the setable roles")
 
 @bot.command (pass_context=True)
 async def role(ctx, cmdRole : str = None):

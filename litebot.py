@@ -21,7 +21,8 @@ async def on_member_join(Member : discord.User):
 	try:
 		if ((await check_config('join',Member.server, False) == 1)and(await check_config('joinleaveChannel',Member.server, True) != '')):
 			channelId = await check_config('joinleaveChannel',Member.server, True)
-			await bot.send_message(bot.get_channel(channelId),"Welcome **"+Member.mention+"**")
+			if (channelId == None):
+				await bot.send_message(bot.get_channel(channelId),"Welcome **"+Member.mention+"**")
 		else:
 			return
 	except:
@@ -34,7 +35,8 @@ async def on_member_remove(Member : discord.User):
 	try:
 		if ((await check_config('leave',Member.server, False) == 1)and(await check_config('joinleaveChannel',Member.server, True) != '')):
 			channelId = await check_config('joinleaveChannel',Member.server, True)
-			await bot.send_message(bot.get_channel(channelId),"**"+Member.name+"** has left the server")
+			if (channelId == None):
+				await bot.send_message(bot.get_channel(channelId),"**"+Member.name+"** has left the server")
 		else:
 			return
 	except:
@@ -193,7 +195,7 @@ async def ban(ctx, Member : discord.User):
 async def report(ctx, Member : discord.User, *args):
 	try:
 		if ((await check_config('report',Member.server, False) == 1)and(await check_config('reportChannel',Member.server, True) != '')):
-			await bot.send_message(ctx.message.author, "Your report against **"+Member.name+"#"+Member.discriminator+"** has been submitted to the server's owner")
+			await bot.send_message(ctx.message.author, "Your report against **"+Member.name+"#"+Member.discriminator+"** has been submitted")
 			try:
 				channelId = await check_config('reportChannel',Member.server, True)
 
@@ -203,12 +205,13 @@ async def report(ctx, Member : discord.User, *args):
 				elif "@" in channelId:
 					channelId = channelId.replace('@', '')
 					reportSendLocation = await bot.get_user_info(channelId)
-
+				if (channelId == None):
+					await bot.send_message(ctx.message.author, "Your report against **"+Member.name+"#"+Member.discriminator+"** has been submitted")
 				embed=discord.Embed(title="Submitted by "+ctx.message.author.name+"#"+ctx.message.author.discriminator, description=' '.join(args))
 				embed.set_author(name="Report against "+Member.name+"#"+Member.discriminator)
 				await bot.send_message(reportSendLocation, embed=embed)
-			except discord.HTTPException:
-				bot.send_message(ctx.message.author, "Your report against **" + Member.name + "** was unable to be sent")
+			except:
+				await bot.send_message(ctx.message.author, "Your report against **" + Member.name + "** was unable to be sent")
 			await bot.delete_message(ctx.message)
 		else:
 			await bot.say("Report is disabled")

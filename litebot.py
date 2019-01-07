@@ -49,18 +49,17 @@ async def on_message(message, timeout=10):
 	if (message.channel.is_private==False and (message.author != message.server.me)):
 		if (await check_config('swear', message.author.server, False) >= 1):
 			if (message.server.me.server_permissions.manage_messages  or message.server.me.server_permissions.administrator ):
-				message.content = message.content.lower()
 				toDelete = False
 				for i in words1:
-					if ((str(i) in message.content) and (await check_config('swear', message.author.server, False) >= 1)):
+					if ((str(i) in message.content.lower()) and (await check_config('swear', message.author.server, False) >= 1)):
 						toDelete = True
 
 				for i in words2:
-					if ((str(i) in message.content) and (await check_config('swear', message.author.server, False) >= 2)):
+					if ((str(i) in message.content.lower()) and (await check_config('swear', message.author.server, False) >= 2)):
 						toDelete = True
 
 				for i in words3:
-					if ((str(i) in message.content) and (await check_config('swear', message.author.server, False) >= 3)):
+					if ((str(i) in message.content.lower()) and (await check_config('swear', message.author.server, False) >= 3)):
 						toDelete = True
 
 				if (toDelete ):
@@ -141,8 +140,8 @@ async def kick(ctx, Member : discord.User):
 			if (Member.id == "227422944123551754" or Member.id == "405829095054770187"):
 				await bot.say("Unable to kick that user")
 			else:
-				if (ctx.message.server.me.server_permissions.kick_members or ctx.message.server.me.server_permissions.administrator ):
-					if (ctx.message.author.server_permissions.kick_members or ctx.message.author.server_permissions.administrator ):
+				if (ctx.message.server.me.server_permissions.kick_members or ctx.message.server.me.server_permissions.administrator):
+					if (ctx.message.author.server_permissions.kick_members or ctx.message.author.server_permissions.administrator):
 						try:
 							await bot.kick(Member)
 							await bot.say("Successfully kicked **" + Member.name + "**")
@@ -166,8 +165,8 @@ async def ban(ctx, Member : discord.User):
 			if (Member.id == "227422944123551754" or Member.id == "405829095054770187"):
 				await bot.say("Unable to ban that user")
 			else:
-				if (ctx.message.server.me.server_permissions.ban_members or ctx.message.server.me.server_permissions.ban_members):
-					if (ctx.message.author.server_permissions.ban_members  or ctx.message.author.server_permissions.administrator ):
+				if (ctx.message.server.me.server_permissions.ban_members or ctx.message.server.me.server_permissions.administrator):
+					if (ctx.message.author.server_permissions.ban_members  or ctx.message.author.server_permissions.administrator):
 						try:
 							await bot.ban(Member, delete_message_days=3)
 							await bot.say("Successfully banned **" + Member.name + "**")
@@ -263,6 +262,9 @@ async def enable(ctx, command : str):
 			elif (command.lower() == 'swear'):
 				config[ctx.message.server.id]["enabled"]['swear'] = 1
 				await bot.say("Swear blocking has been enabled")
+			elif (command.lower() == 'role'):
+				config[ctx.message.server.id]["enabled"]['role'] = 1
+				await bot.say("Self role setting has been enabled")
 			else:
 				await bot.say("Invalid argument. Do `!help enable` for more info")
 		else:
@@ -305,6 +307,9 @@ async def disable(ctx, command : str):
 			elif (command.lower() == 'swear'):
 				config[ctx.message.server.id]["enabled"]['swear'] = 0
 				await bot.say("Swear blocking has been disabled")
+			elif (command.lower() == 'role'):
+				config[ctx.message.server.id]["enabled"]['role'] = 0
+				await bot.say("Self role setting has been disabled")
 			else:
 				await bot.say("Invalid argument. Do `!help disable` for more info")
 		else:
@@ -429,6 +434,50 @@ async def set(ctx, command : str, input : str):
 		await bot.say("Error")
 		print("Error")
 
+@bot.command (pass_context=True)
+async def setroles(ctx, *args):
+	for i in args:
+		if (discord.utils.get(ctx.message.server.roles, name=i))==None:
+			await bot.say("Invalid role(s)")
+			return
+		
+	with open('config.json', 'r') as j:
+		config = json.load(j)
+		await update_data(config, ctx.message.server)
+	config[ctx.message.server.id]["role"]= args
+	with open("config.json", "w") as j:
+		json.dump(config, j)
+	await bot.say("Succesfully set roles")
+
+@bot.command (pass_context=True)
+async def role(ctx, cmdRole : str = None):
+		if cmdRole == None:
+			await bot.say("You can set your roles to the following: `"+'`, `'.join(await check_config('role',ctx.message.server, True))+"`")
+			return
+		role = discord.utils.get(ctx.message.server.roles, name=cmdRole)
+		if (await check_config('role',ctx.message.server, False)):
+			if (role != None):
+				if cmdRole in (await check_config('role',ctx.message.server, True)):
+					if (ctx.message.server.me.server_permissions.manage_roles or ctx.message.server.me.server_permissions.administrator):
+						if role not in ctx.message.author.roles:
+							try:
+								await bot.add_roles(ctx.message.author, role)
+								await bot.say("Successfully gave you the "+role.name+" role")
+							except:
+								await bot.say("Error")
+						elif role in ctx.message.author.roles:
+							await bot.remove_roles(ctx.message.author, role)
+							await bot.say("Successfully removed the "+role.name+" role from you")
+					else:
+						await bot.say("Sorry, I do not have permission to set roles.\nDisabling !role now")
+						await bot_disable(ctx.message.server, "role")
+				else:
+					await bot.say("That is not a valid role")
+			else:
+				await bot.say("Unable to find that role")
+		else:
+			await bot.say("Role setting is disabled")
+
 #Function to disable bot commands serverside
 async def bot_disable(server, command):
 	with open('config.json', 'r') as j:
@@ -451,8 +500,10 @@ async def update_data(config, server):
 		config[server.id]["enabled"]['report'] = 0
 		config[server.id]["enabled"]['invite'] = 0
 		config[server.id]["enabled"]['swear'] = 1
+		config[server.id]["enabled"]['role'] = 0
 		config[server.id]["joinleaveChannel"] = ""
 		config[server.id]["reportChannel"] = ""
+		config[server.id]["role"] = {}
 
 #Function to make it easier for commands to check their config
 async def check_config(command, server, outsideEnabled):

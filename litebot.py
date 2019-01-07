@@ -459,11 +459,8 @@ async def setroles(ctx, *args):
 				return
 		a = 0
 		for i in setRoles:
-			print("Got Here")
 			role = discord.utils.get(ctx.message.server.roles, name=i)
-			print("Got Here")
 			setRoles[a] = role.id
-			print("Got Here")
 			a = a+1
 		with open('config.json', 'r') as j:
 			config = json.load(j)
@@ -486,7 +483,7 @@ async def role(ctx, *args):
 			if (role != None):
 				roleList = await check_config('role',ctx.message.server, True)
 				a = 0
-				for i in roleList:
+				for i in roleList:	
 					role = discord.utils.get(ctx.message.server.roles, id=i)
 					roleList[a] = str(role)
 					a = a+1

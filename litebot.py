@@ -487,6 +487,7 @@ async def role(ctx, *args):
 					role = discord.utils.get(ctx.message.server.roles, id=i)
 					roleList[a] = str(role)
 					a = a+1
+				role = discord.utils.get(ctx.message.server.roles, name=" ".join(args))
 				if str(role) in (roleList):
 					if (ctx.message.server.me.server_permissions.manage_roles or ctx.message.server.me.server_permissions.administrator):
 						if role not in ctx.message.author.roles:

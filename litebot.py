@@ -356,8 +356,16 @@ async def check(ctx):
 
 		#Swear Blocking
 		cmd2Enabled = await check_config('swear',ctx.message.server, False)
-		swearEnabled = ("Swear blocking is set to **"+str(cmd2Enabled)+"**")
+		swearEnabled = ("Swear blocking is set to **"+str(cmd2Enabled)+"**\n")
 		checkString = checkString + swearEnabled
+		
+		#Self role setting
+		if (await check_config("role",ctx.message.server, False) == 1):
+			cmdEnabled = "Enabled"
+		else:
+			cmdEnabled = "Disabled"
+		stringAddition = ("Self role setting is **"+cmdEnabled+"**")
+		checkString = checkString + stringAddition
 
 		await bot.say(checkString)
 		#Channels for admins

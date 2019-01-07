@@ -442,10 +442,12 @@ async def set(ctx, command : str, input : str):
 		await bot.say("Error")
 		print("Error")
 
+#Command for admins to set user settable roles
 @bot.command (pass_context=True)
 async def setroles(ctx, *args):
+	setRoles = " ".join(args).split(',')
 	if (ctx.message.author.server_permissions.administrator ):
-		for i in args:
+		for i in setRoles:
 			if (discord.utils.get(ctx.message.server.roles, name=i))==None:
 				await bot.say("Invalid role(s)")
 				return
@@ -453,32 +455,33 @@ async def setroles(ctx, *args):
 		with open('config.json', 'r') as j:
 			config = json.load(j)
 			await update_data(config, ctx.message.server)
-		config[ctx.message.server.id]["role"]= args
+		config[ctx.message.server.id]["role"]= setRoles
 		with open("config.json", "w") as j:
 			json.dump(config, j)
 		await bot.say("Succesfully set roles")
 	else:
 		await bot.say("You must have admin to change the setable roles")
 
+#Allows users to set their own roles
 @bot.command (pass_context=True)
-async def role(ctx, cmdRole : str = None):
-		if cmdRole == None:
+async def role(ctx, *args):
+		if str(args) == "()":
 			await bot.say("You can set your roles to the following: `"+'`, `'.join(await check_config('role',ctx.message.server, True))+"`")
 			return
-		role = discord.utils.get(ctx.message.server.roles, name=cmdRole)
+		role = discord.utils.get(ctx.message.server.roles, name=" ".join(args))
 		if (await check_config('role',ctx.message.server, False)):
 			if (role != None):
-				if cmdRole in (await check_config('role',ctx.message.server, True)):
+				if str(role) in (await check_config('role',ctx.message.server, True)):
 					if (ctx.message.server.me.server_permissions.manage_roles or ctx.message.server.me.server_permissions.administrator):
 						if role not in ctx.message.author.roles:
 							try:
 								await bot.add_roles(ctx.message.author, role)
-								await bot.say("Successfully gave you the "+role.name+" role")
+								await bot.say("Successfully gave you the `"+role.name+"` role")
 							except:
 								await bot.say("Error")
 						elif role in ctx.message.author.roles:
 							await bot.remove_roles(ctx.message.author, role)
-							await bot.say("Successfully removed the "+role.name+" role from you")
+							await bot.say("Successfully removed the `"+role.name+"` role from you")
 					else:
 						await bot.say("Sorry, I do not have permission to set roles.\nDisabling !role now")
 						await bot_disable(ctx.message.server, "role")

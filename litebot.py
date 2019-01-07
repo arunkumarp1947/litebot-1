@@ -457,7 +457,14 @@ async def setroles(ctx, *args):
 			if (discord.utils.get(ctx.message.server.roles, name=i))==None:
 				await bot.say("Invalid role(s)")
 				return
-			
+		a = 0
+		for i in setRoles:
+			print("Got Here")
+			role = discord.utils.get(ctx.message.server.roles, name=i)
+			print("Got Here")
+			setRoles[a] = role.id
+			print("Got Here")
+			a = a+1
 		with open('config.json', 'r') as j:
 			config = json.load(j)
 			await update_data(config, ctx.message.server)
@@ -477,7 +484,13 @@ async def role(ctx, *args):
 		role = discord.utils.get(ctx.message.server.roles, name=" ".join(args))
 		if (await check_config('role',ctx.message.server, False)):
 			if (role != None):
-				if str(role) in (await check_config('role',ctx.message.server, True)):
+				roleList = await check_config('role',ctx.message.server, True)
+				a = 0
+				for i in roleList:
+					role = discord.utils.get(ctx.message.server.roles, id=i)
+					roleList[a] = str(role)
+					a = a+1
+				if str(role) in (roleList):
 					if (ctx.message.server.me.server_permissions.manage_roles or ctx.message.server.me.server_permissions.administrator):
 						if role not in ctx.message.author.roles:
 							try:

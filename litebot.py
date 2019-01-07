@@ -476,7 +476,13 @@ async def setroles(ctx, *args):
 @bot.command (pass_context=True)
 async def role(ctx, *args):
 		if str(args) == "()":
-			await bot.say("You can set your roles to the following: `"+'`, `'.join(await check_config('role',ctx.message.server, True))+"`")
+			roleList = await check_config('role',ctx.message.server, True)
+			a = 0
+			for i in roleList:	
+				role = discord.utils.get(ctx.message.server.roles, id=i)
+				roleList[a] = str(role)
+				a = a+1
+			await bot.say("You can set your roles to the following: `"+'`, `'.join(roleList)+"`")
 			return
 		role = discord.utils.get(ctx.message.server.roles, name=" ".join(args))
 		if (await check_config('role',ctx.message.server, False)):

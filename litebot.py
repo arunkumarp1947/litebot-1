@@ -225,11 +225,14 @@ async def purge(ctx, numPurge : int,):
 		if (await check_config('purge',ctx.message.author.server, False) == 1):
 			if (ctx.message.server.me.server_permissions.manage_messages or ctx.message.server.me.server_permissions.administrator):
 				if (ctx.message.author.server_permissions.manage_messages or ctx.message.author.server_permissions.administrator):
-					await bot.delete_message(ctx.message)
-					try:
-						await bot.purge_from(ctx.message.channel,limit=numPurge)
-					except discord.HTTPException:
-						await bot.say("Unable to purge messages")
+					if(numPurge >= 0 and numPurge <= 100):
+						await bot.delete_message(ctx.message)
+						try:
+							await bot.purge_from(ctx.message.channel,limit=numPurge)
+						except:
+							await bot.say("Unable to purge messages")
+					else:
+						await bot.say("You can only purge up to 100 messages")
 			else:
 				await bot.say("Sorry, I do not have permission to delete messages. \nDisabling purge now")
 				await bot_disable(ctx.message.server, "purge")

@@ -486,6 +486,7 @@ async def setroles(ctx, *args):
 #Allows users to set their own roles
 @bot.command (pass_context=True)
 async def role(ctx, *args):
+	if (await check_config('role',ctx.message.author.server, False)==1):
 		if str(args)=="()":
 			roleList=await check_config('role',ctx.message.server, True)
 			a=0
@@ -497,42 +498,41 @@ async def role(ctx, *args):
 				await bot.say("Unable to find roles, try `!setroles` to reset them")
 			elif (str(roleList)=="{}"):
 				await bot.say("No roles have been set using `!setroles`\nDisabling !role now")
-				await bot_disable(ctx.message.server, "role")
+				await bot_disable(ctx.message.server, 'role')
 			else:
 				await bot.say("You can set your roles to the following: `"+'`, `'.join(roleList)+"`")
 			return
 		role=discord.utils.get(ctx.message.server.roles, name=" ".join(args))
-		if (await check_config('role',ctx.message.server, False)):
-			if (role !=None):
-				roleList=await check_config('role',ctx.message.server, True)
-				a=0
-				for i in roleList:	
-					role=discord.utils.get(ctx.message.server.roles, id=i)
-					roleList[a]=str(role)
-					a=a+1
-				if None in roleList:
-					await bot.say("Unable to find roles, try `!setroles` to reset them")
-				role=discord.utils.get(ctx.message.server.roles, name=" ".join(args))
-				if str(role) in (roleList):
-					if (role.position < ctx.message.server.me.top_role.position):
-						if role not in ctx.message.author.roles:
-							try:
-								await bot.add_roles(ctx.message.author, role)
-								await bot.say("Successfully gave you the `"+role.name+"` role")
-							except:
-								await bot.say("Error")
-						elif role in ctx.message.author.roles:
-							await bot.remove_roles(ctx.message.author, role)
-							await bot.say("Successfully removed the `"+role.name+"` role from you")
-					else:
-						await bot.say("Sorry, I do not have permission to set roles.\nDisabling !role now")
-						await bot_disable(ctx.message.server, "role")
+		if (role !=None):
+			roleList=await check_config('role',ctx.message.server, True)
+			a=0
+			for i in roleList:	
+				role=discord.utils.get(ctx.message.server.roles, id=i)
+				roleList[a]=str(role)
+				a=a+1
+			if None in roleList:
+				await bot.say("Unable to find roles, try `!setroles` to reset them")
+			role=discord.utils.get(ctx.message.server.roles, name=" ".join(args))
+			if str(role) in (roleList):
+				if (role.position < ctx.message.server.me.top_role.position):
+					if role not in ctx.message.author.roles:
+						try:
+							await bot.add_roles(ctx.message.author, role)
+							await bot.say("Successfully gave you the `"+role.name+"` role")
+						except:
+							await bot.say("Error")
+					elif role in ctx.message.author.roles:
+						await bot.remove_roles(ctx.message.author, role)
+						await bot.say("Successfully removed the `"+role.name+"` role from you")
 				else:
-					await bot.say("That is not a valid role")
+					await bot.say("Sorry, I do not have permission to set roles.\nDisabling !role now")
+					await bot_disable(ctx.message.server, 'role')
 			else:
-				await bot.say("Unable to find that role")
+				await bot.say("That is not a valid role")
 		else:
-			await bot.say("Role setting is disabled")
+			await bot.say("Unable to find that role")
+	else:
+		await bot.say("Role setting is disabled")
 
 #Function to disable bot commands serverside
 async def bot_disable(server, command):

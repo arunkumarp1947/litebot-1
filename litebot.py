@@ -461,8 +461,12 @@ async def setroles(ctx, *args):
 	setRoles=" ".join(args).split(',')
 	if (ctx.message.author.server_permissions.administrator):
 		for i in setRoles:
-			if (((discord.utils.get(ctx.message.server.roles, name=i))==None)or(setRoles.count(i)>1)):
+			role=discord.utils.get(ctx.message.server.roles, name=i)
+			if (role==None)or(setRoles.count(i)>1):
 				await bot.say("Invalid role(s)")
+				return
+			elif (role.position < ctx.message.server.me.top_role.position):
+				await bot.say("Unable to set, one or more of the roles is above my highest role")
 				return
 		a=0
 		for i in setRoles:
@@ -507,7 +511,7 @@ async def role(ctx, *args):
 					await bot.say("Unable to find roles, try `!setroles` to reset them")
 				role=discord.utils.get(ctx.message.server.roles, name=" ".join(args))
 				if str(role) in (roleList):
-					if (ctx.message.server.me.server_permissions.manage_roles or ctx.message.server.me.server_permissions.administrator):
+					if (role.position < ctx.message.server.me.top_role.position):
 						if role not in ctx.message.author.roles:
 							try:
 								await bot.add_roles(ctx.message.author, role)

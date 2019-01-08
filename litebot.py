@@ -495,6 +495,9 @@ async def role(ctx, *args):
 				a=a+1
 			if None in roleList:
 				await bot.say("Unable to find roles, try `!setroles` to reset them")
+			elif (str(roleList)=="{}"):
+				await bot.say("No roles have been set using `!setroles`\nDisabling !role now")
+				await bot_disable(ctx.message.server, "role")
 			else:
 				await bot.say("You can set your roles to the following: `"+'`, `'.join(roleList)+"`")
 			return

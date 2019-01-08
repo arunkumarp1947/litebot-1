@@ -191,25 +191,30 @@ async def ban(ctx, Member : discord.User):
 async def report(ctx, Member : discord.User, *args):
 	try:
 		if ((await check_config('report',Member.server, False)==1)and(await check_config('reportChannel',Member.server, True) !='')):
-			await bot.send_message(ctx.message.author, "Your report against **"+Member.name+"#"+Member.discriminator+"** has been submitted")
-			try:
-				channelId=await check_config('reportChannel',Member.server, True)
-
-				if "#" in channelId:
-					channelId=channelId.replace('#', '')
-					reportSendLocation=bot.get_channel(channelId)
-				elif "@" in channelId:
-					channelId=channelId.replace('@', '')
+			reportChannelBroken = False
+			channelId=await check_config('reportChannel',Member.server, True)
+			if "#" in channelId:
+				channelId=channelId.replace('#', '')
+				reportSendLocation=bot.get_channel(channelId)
+				if (reportSendLocation==None):
+					reportChannelBroken = True
+					
+			elif "@" in channelId:
+				channelId=channelId.replace('@', '')
+				try:
 					reportSendLocation=await bot.get_user_info(channelId)
-				if (channelId==None):
-					await bot.send_message(ctx.message.author, "Your report against **"+Member.name+"#"+Member.discriminator+"** has been submitted")
+				except discord.NotFound:
+					reportChannelBroken = True
+			if (reportChannelBroken==False):
+				await bot.send_message(ctx.message.author, "Your report against **"+Member.name+"#"+Member.discriminator+"** has been submitted")
+				await bot.delete_message(ctx.message)
 				embed=discord.Embed(title="Submitted by "+ctx.message.author.name+"#"+ctx.message.author.discriminator, description=' '.join(args))
 				embed.set_author(name="Report against "+Member.name+"#"+Member.discriminator)
-				await bot.send_message(reportSendLocation, embed=embed)
-			except:
+				await bot.send_message(reportSendLocation, embed=embed)					
+			else:
+				print("Gotten Here")
 				await bot.delete_message(ctx.message)
-				await bot.send_message(ctx.message.author, "Your report against **" + Member.name + "** was unable to be sent")
-			await bot.delete_message(ctx.message)
+				await bot.send_message(ctx.message.author, "Your report against **"+Member.name+"#"+Member.discriminator+"** was unable to be submitted")
 		else:
 			await bot.say("Report is disabled")
 	except:

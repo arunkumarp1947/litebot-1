@@ -21,7 +21,7 @@ async def on_member_join(Member : discord.User):
 	try:
 		if ((await check_config('join',Member.server, False)==1)and(await check_config('joinleaveChannel',Member.server, True) !='')):
 			channelId=await check_config('joinleaveChannel',Member.server, True)
-			if (channelId !=None):
+			if (channelId!=None):
 				await bot.send_message(bot.get_channel(channelId),"Welcome **"+Member.mention+"**")
 	except:
 		await bot.say("Error")
@@ -33,7 +33,7 @@ async def on_member_remove(Member : discord.User):
 	try:
 		if ((await check_config('leave',Member.server, False)==1)and(await check_config('joinleaveChannel',Member.server, True) !='')):
 			channelId=await check_config('joinleaveChannel',Member.server, True)
-			if (channelId !=None):
+			if (channelId!=None):
 				await bot.send_message(bot.get_channel(channelId),"**"+Member.name+"** has left the server")
 	except:
 		await bot.say("Error")
@@ -489,7 +489,10 @@ async def role(ctx, *args):
 				role=discord.utils.get(ctx.message.server.roles, id=i)
 				roleList[a]=str(role)
 				a=a+1
-			await bot.say("You can set your roles to the following: `"+'`, `'.join(roleList)+"`")
+			if None in roleList:
+				await bot.say("Unable to find roles, try `!setroles` to reset them")
+			else:
+				await bot.say("You can set your roles to the following: `"+'`, `'.join(roleList)+"`")
 			return
 		role=discord.utils.get(ctx.message.server.roles, name=" ".join(args))
 		if (await check_config('role',ctx.message.server, False)):
@@ -500,6 +503,8 @@ async def role(ctx, *args):
 					role=discord.utils.get(ctx.message.server.roles, id=i)
 					roleList[a]=str(role)
 					a=a+1
+				if None in roleList:
+					await bot.say("Unable to find roles, try `!setroles` to reset them")
 				role=discord.utils.get(ctx.message.server.roles, name=" ".join(args))
 				if str(role) in (roleList):
 					if (ctx.message.server.me.server_permissions.manage_roles or ctx.message.server.me.server_permissions.administrator):

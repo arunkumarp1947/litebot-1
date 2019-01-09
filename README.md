@@ -5,28 +5,23 @@ Litebot is a dicord bot for simple moderation. It can delete messages containing
 [Invite Litebot Here](https://discordapp.com/oauth2/authorize?client_id=405829095054770187&scope=bot&permissions=11278)
 
 ## To do
-- ☑ Deletes messages containing any words in words.txt
+- ☑ Deletes messages containing any words in words (Different levels of swear blocking)
 - ☑ Join & Leave messages
 - ☑ Kicking & Banning commands
-- ☑ Report function
+- ☑ Report command (Set which channel or user the reports go to)
 - ☑ Purge Messages 
 - ☑ Help command
 - ☑ Invite blocking
-- ☑ Server specific disabling/enabling commands
-- ☑ Better config - Set channel for join/leave messages
-- ☑ Better Report System (Set which channel or user the reports go to)
-- ☑ Better Swear blocking system (Different levels of swear blocking)
-- ☑ Add support for minimal permissions
-- ☑ Add !check command to see what commands are enabled
-- ☑ Add verification system for channels (Check on !set to see if the channel works)
+- ☑ Server specific disabling/enabling commands & channels for join/leave
+- ☑ Support for minimal permissions
+- ☑ Check command to see what commands are enabled
 - ☑ Roles from command
-- ☐ Improve resliance against server changes
-- ☐ Purge specific user's messages
 - ☐ Clean up Code
-- ☐ New prefix
+- ☐ New/custom prefix
 
 ## Most Likely not going to do
 - ☐ Music System
+- ☐ Currency
 
 # Docs
 
@@ -59,17 +54,28 @@ Litebot is a dicord bot for simple moderation. It can delete messages containing
 - Can be enabled/disable with `!enable ban`
 ### Report
 - Sends a report to wherever the report channel is set to
-- Use `!set report #reports` to set the report channel to either a channel or a user
-- Use `!report @username#0000 Sample report content` to report
+- `!set report #reports` to set the report channel to either a channel or a user
+- `!report @username#0000 Sample report content` to report
 ### Purge
 - Deletes the specified number of messages
 - User must have delete message perm or admin perm
-- Use `!purge 20`
+- Can only purge between 0-100 messages
+-`!purge 20`
 ### Enable/Disable
 - Used to enable or disable a command
 - Use `!enable <command>` or `!disable <command>`
 ### Set
 - Sets a command to a specified value
-- Use `!set <command> <value>`
+- Must have admin
+- `!set <command> <value>`
 ### Check
 - Checks what is enabled
+### setroles
+- Sets roles that can be set by users
+- roles are seperated by commas `,`
+- Must have admin
+- `!setroles <role1>,<role2>,<role3>
+### Role
+- Sets roles for users that usually can't change theirs
+- Can be enabled/disabled
+- `!role <role>`

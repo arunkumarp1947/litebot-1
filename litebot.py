@@ -19,10 +19,10 @@ async def on_read():
 @bot.async_event
 async def on_member_join(Member : discord.User):
 	try:
-		if ((await check_config('join',Member.server, False)==1)and(await check_config('joinleaveChannel',Member.server, True) !='')):
-			channelId=await check_config('joinleaveChannel',Member.server, True)
-			if (channelId!=None):
-				await bot.send_message(bot.get_channel(channelId),"Welcome **"+Member.mention+"**")
+		if (await check_config('join',Member.server, False)==1):
+			channel = bot.get_channel(await check_config('joinleaveChannel',Member.server, True))
+			if (channel!=None):
+				await bot.send_message(channel,"Welcome **"+Member.mention+"**")
 	except:
 		await bot.say("Error")
 		print("Error")
@@ -31,10 +31,10 @@ async def on_member_join(Member : discord.User):
 @bot.async_event
 async def on_member_remove(Member : discord.User):
 	try:
-		if ((await check_config('leave',Member.server, False)==1)and(await check_config('joinleaveChannel',Member.server, True) !='')):
-			channelId=await check_config('joinleaveChannel',Member.server, True)
-			if (channelId!=None):
-				await bot.send_message(bot.get_channel(channelId),"**"+Member.name+"** has left the server")
+		if (await check_config('leave',Member.server, False)==1):
+			channel = bot.get_channel(await check_config('joinleaveChannel',Member.server, True))
+			if (channel!=None):
+				await bot.send_message(channel,"**"+Member.name+"** has left the server")
 	except:
 		await bot.say("Error")
 		print("Error")
@@ -43,11 +43,13 @@ async def on_member_remove(Member : discord.User):
 @bot.event
 async def on_message(message, timeout=10):
 	await bot.change_presence(game=discord.Game(name='Protecting the Server | !help'))
+	
 	unableToCheckMessages=False
-	if (message.channel.is_private==False and (message.author !=message.server.me)):
+	if (message.channel.is_private==False and message.author!=message.server.me):
 		if (await check_config('swear', message.author.server, False) >=1):
 			if (message.server.me.server_permissions.manage_messages  or message.server.me.server_permissions.administrator):
 				toDelete=False
+				
 				for i in words1:
 					if ((str(i) in message.content.lower()) and (await check_config('swear', message.author.server, False) >=1)):
 						toDelete=True
@@ -60,7 +62,7 @@ async def on_message(message, timeout=10):
 					if ((str(i) in message.content.lower()) and (await check_config('swear', message.author.server, False) >=3)):
 						toDelete=True
 
-				if (toDelete):
+				if toDelete:
 					await bot.delete_message(message)
 					await bot.send_message(message.channel, "No swearing")
 					return
@@ -77,6 +79,7 @@ async def on_message(message, timeout=10):
 		if "<@405829095054770187>" in message.content:
 			await bot.send_message(message.channel, "Hi, I'm lite-bot, a administrative bot designed to make running a server easier. My prefix is `!` and you can see my commands using `!help`")
 			return
+		
 		if (unableToCheckMessages):
 			await bot.send_message(message.channel,"Unable to check messages as I do not have permission to delete messages.\nDisabling Swear Blocking and Invite Blocking now")
 			await bot_disable(message.server, 'swear')

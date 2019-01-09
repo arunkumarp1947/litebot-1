@@ -198,7 +198,7 @@ async def report(ctx, Member : discord.User, *args):
 				reportSendLocation=bot.get_channel(channelId)
 				if (reportSendLocation==None):
 					reportChannelBroken = True
-					
+
 			elif "@" in channelId:
 				channelId=channelId.replace('@', '')
 				try:
@@ -210,7 +210,7 @@ async def report(ctx, Member : discord.User, *args):
 				await bot.delete_message(ctx.message)
 				embed=discord.Embed(title="Submitted by "+ctx.message.author.name+"#"+ctx.message.author.discriminator, description=' '.join(args))
 				embed.set_author(name="Report against "+Member.name+"#"+Member.discriminator)
-				await bot.send_message(reportSendLocation, embed=embed)					
+				await bot.send_message(reportSendLocation, embed=embed)
 			else:
 				print("Gotten Here")
 				await bot.delete_message(ctx.message)
@@ -371,7 +371,7 @@ async def check(ctx):
 		cmd2Enabled=await check_config('swear',ctx.message.server, False)
 		swearEnabled=("Swear blocking is set to **"+str(cmd2Enabled)+"**\n")
 		checkString=checkString + swearEnabled
-		
+
 		#Self role setting
 		if (await check_config("role",ctx.message.server, False)==1):
 			cmdEnabled="Enabled"
@@ -490,10 +490,10 @@ async def role(ctx, *args):
 		if str(args)=="()":
 			roleList=await check_config('role',ctx.message.server, True)
 			a=0
-			for i in roleList:	
+			for i in roleList:
 				role=discord.utils.get(ctx.message.server.roles, id=i)
 				roleList[a]=str(role)
-				a=a+1
+				a+=1
 			if None in roleList:
 				await bot.say("Unable to find roles, try `!setroles` to reset them")
 			elif (str(roleList)=="{}"):
@@ -506,10 +506,10 @@ async def role(ctx, *args):
 		if (role !=None):
 			roleList=await check_config('role',ctx.message.server, True)
 			a=0
-			for i in roleList:	
+			for i in roleList:
 				role=discord.utils.get(ctx.message.server.roles, id=i)
 				roleList[a]=str(role)
-				a=a+1
+				a+=1
 			if None in roleList:
 				await bot.say("Unable to find roles, try `!setroles` to reset them")
 			role=discord.utils.get(ctx.message.server.roles, name=" ".join(args))

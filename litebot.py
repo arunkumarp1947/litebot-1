@@ -465,7 +465,7 @@ async def setroles(ctx, *args):
 			if (role==None)or(setRoles.count(i)>1):
 				await bot.say("Invalid role(s)")
 				return
-			elif (role.position < ctx.message.server.me.top_role.position):
+			elif (role.position > ctx.message.server.me.top_role.position):
 				await bot.say("Unable to set, one or more of the roles is above my highest role")
 				return
 		a=0

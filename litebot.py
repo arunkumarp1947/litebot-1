@@ -19,10 +19,16 @@ async def on_read():
 @bot.async_event
 async def on_member_join(Member : discord.User):
 	try:
+		#Join message
 		if (await check_config('join',Member.server, False)==1):
 			channel = bot.get_channel(await check_config('joinleaveChannel',Member.server, True))
+			joinMsgText = await check_config('joinMsgText',Member.server, True)
+			if joinMsgText=="":
+				joinMsgText="Welcome {user}"
 			if (channel!=None):
-				await bot.send_message(channel,"Welcome **"+Member.mention+"**")
+				await bot.send_message(channel,joinMsgText.replace('\\n','\n').format(user=Member.mention,server=Member.server.name))
+				
+		#Join dm
 		if (await check_config('joinDm',Member.server, False)==1):
 			dmText = (await check_config('joinDmText',Member.server, True))
 			if (dmText==""):
@@ -41,8 +47,11 @@ async def on_member_remove(Member : discord.User):
 	try:
 		if (await check_config('leave',Member.server, False)==1):
 			channel = bot.get_channel(await check_config('joinleaveChannel',Member.server, True))
+			leaveMsgText = await check_config('leaveMsgText',Member.server, True)
+			if leaveMsgText=="":
+				leaveMsgText="{user} has left the server"
 			if (channel!=None):
-				await bot.send_message(channel,"**"+Member.name+"** has left the server")
+				await bot.send_message(channel,leaveMsgText.replace('\\n','\n').format(user=Member.mention,server=Member.server.name))
 	except:
 		await bot.say("Error")
 		print("Error")
@@ -105,9 +114,6 @@ async def on_message(message, timeout=10):
 			else:
 				if (message.author == bot.user)and sayNo:
 					await bot.send_message(message.channel,"No")
-					
-					
-		
 	else:
 		return
 
@@ -515,7 +521,23 @@ async def set(ctx, command : str, *args):
 			elif (command.lower()=='joindm'):
 				if (len(" ".join(args))<=200):
 					config[ctx.message.server.id]["joinDmText"]=" ".join(args)
-					await bot.say("Join dm message to `"+config[ctx.message.server.id]["joinDmText"]+"`")
+					await bot.say("Join dm message set to `"+config[ctx.message.server.id]["joinDmText"]+"`")
+				else:
+					await bot.say("Too many characters, max 200")
+					return
+					
+			elif (command.lower()=='joinmsg'):
+				if (len(" ".join(args))<=200):
+					config[ctx.message.server.id]["joinMsgText"]=" ".join(args)
+					await bot.say("Join message set to `"+config[ctx.message.server.id]["joinMsgText"]+"`")
+				else:
+					await bot.say("Too many characters, max 200")
+					return
+					
+			elif (command.lower()=='leavemsg'):
+				if (len(" ".join(args))<=200):
+					config[ctx.message.server.id]["leaveMsgText"]=" ".join(args)
+					await bot.say("Join message set to `"+config[ctx.message.server.id]["leaveMsgText"]+"`")
 				else:
 					await bot.say("Too many characters, max 200")
 					return
@@ -636,6 +658,8 @@ async def update_data(config, server):
 		config[server.id]["joinleaveChannel"]=""
 		config[server.id]["reportChannel"]=""
 		config[server.id]["joinDmText"]=""
+		config[server.id]["joinMsgText"]=""
+		config[server.id]["leaveMsgText"]=""
 		config[server.id]["role"]={}
 		
 

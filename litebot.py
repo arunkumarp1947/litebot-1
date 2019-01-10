@@ -171,11 +171,14 @@ async def kick(ctx, Member : discord.User):
 			else:
 				if (ctx.message.server.me.server_permissions.kick_members or ctx.message.server.me.server_permissions.administrator):
 					if (ctx.message.author.server_permissions.kick_members or ctx.message.author.server_permissions.administrator):
-						try:
-							await bot.kick(Member)
-							await bot.say("Successfully kicked **" + Member.name + "**")
-						except discord.HTTPException:
-							await bot.say("Unable to kick **" + Member.name + "**.")
+						if (ctx.message.author.top_role.position > Member.top_role.position):	
+							try:
+								await bot.kick(Member)
+								await bot.say("Successfully kicked **" + Member.name + "**")
+							except discord.HTTPException:
+								await bot.say("Unable to kick **" + Member.name + "**.")
+						else:
+							await bot.say("You do not have permission to kick** " + Member.name + "**")
 					else:
 						await bot.say("You do not have permission to kick** " + Member.name + "**")
 				else:
@@ -196,11 +199,14 @@ async def ban(ctx, Member : discord.User):
 			else:
 				if (ctx.message.server.me.server_permissions.ban_members or ctx.message.server.me.server_permissions.administrator):
 					if (ctx.message.author.server_permissions.ban_members  or ctx.message.author.server_permissions.administrator):
-						try:
-							await bot.ban(Member, delete_message_days=3)
-							await bot.say("Successfully banned **" + Member.name + "**")
-						except discord.HTTPException:
-							await bot.say("Unable to ban **" + Member.name + "**")
+						if (ctx.message.author.top_role.position > Member.top_role.position):
+							try:
+								await bot.ban(Member, delete_message_days=3)
+								await bot.say("Successfully banned **" + Member.name + "**")
+							except discord.HTTPException:
+								await bot.say("Unable to ban **" + Member.name + "**")
+						else:
+							await bot.say("You do not have permission to ban** " + Member.name + "**")
 					else:
 						await bot.say("You do not have permission to ban **" + Member.name + "**")
 				else:

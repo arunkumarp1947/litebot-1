@@ -17,7 +17,7 @@ Litebot is a dicord bot for simple moderation. It can delete messages containing
 - ☑ Check command to see what commands are enabled
 - ☑ Roles from command
 - ☑ Custom DM to new users
-- ☐ Even more custom text for join/leave
+- ☑ Custom text for join/leave
 - ☐ Rotating MOTD
 - ☐ Log channel
 - ☐ Clean up Code

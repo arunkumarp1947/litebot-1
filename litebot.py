@@ -93,7 +93,7 @@ async def on_message(message, timeout=10):
 			await bot_disable(message.server, 'swear')
 			await bot_disable(message.server, 'invite')
 			unableToCheckMessages=False
-		
+		await bot.process_commands(message)
 		runOnce=False
 		async for message in bot.logs_from(message.channel,limit=2):
 			if runOnce==False:
@@ -107,7 +107,7 @@ async def on_message(message, timeout=10):
 					await bot.send_message(message.channel,"No")
 					
 					
-		await bot.process_commands(message)
+		
 	else:
 		return
 

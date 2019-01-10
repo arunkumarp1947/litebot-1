@@ -93,6 +93,20 @@ async def on_message(message, timeout=10):
 			await bot_disable(message.server, 'swear')
 			await bot_disable(message.server, 'invite')
 			unableToCheckMessages=False
+		
+		runOnce=False
+		async for message in bot.logs_from(message.channel,limit=2):
+			if runOnce==False:
+				if ("stfu" in message.content.lower())or("die" in message.content.lower())or("kys" in message.content.lower()):
+					sayNo=True
+				else:
+					sayNo=False
+				runOnce=True
+			else:
+				if (message.author == bot.user)and sayNo:
+					await bot.send_message(message.channel,"No")
+					
+					
 		await bot.process_commands(message)
 	else:
 		return

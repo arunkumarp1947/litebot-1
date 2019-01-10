@@ -23,6 +23,14 @@ async def on_member_join(Member : discord.User):
 			channel = bot.get_channel(await check_config('joinleaveChannel',Member.server, True))
 			if (channel!=None):
 				await bot.send_message(channel,"Welcome **"+Member.mention+"**")
+		if (await check_config('joinDm',Member.server, False)==1):
+			dmText = (await check_config('joinDmText',Member.server, True))
+			if (dmText==""):
+				return
+			elif (len(dmText)>=200):
+				return
+			await bot.send_message(Member,dmText.replace('\\n','\n').format(user=Member.name,server=Member.server.name))
+		
 	except:
 		await bot.say("Error")
 		print("Error")
@@ -281,6 +289,9 @@ async def enable(ctx, command : str):
 			elif (command.lower()=='role'):
 				config[ctx.message.server.id]["enabled"]['role']=1
 				await bot.say("Self role setting has been enabled")
+			elif (command.lower()=='joindm'):
+				config[ctx.message.server.id]["enabled"]['joinDm']=1
+				await bot.say("Dm on join has been enabled")
 			else:
 				await bot.say("Invalid argument. Do `!help enable` for more info")
 		else:
@@ -326,6 +337,9 @@ async def disable(ctx, command : str):
 			elif (command.lower()=='role'):
 				config[ctx.message.server.id]["enabled"]['role']=0
 				await bot.say("Self role setting has been disabled")
+			elif (command.lower()=='joindm'):
+				config[ctx.message.server.id]["enabled"]['joinDm']=0
+				await bot.say("Dm on join has been disabled")
 			else:
 				await bot.say("Invalid argument. Do `!help disable` for more info")
 		else:
@@ -353,7 +367,7 @@ async def check(ctx):
 			checkString=checkString + stringAddition
 
 		#Kick Ban Purge & Report
-		basicCommands=["Kick","Ban","Purge","Report"]
+		basicCommands=["Kick","Ban","Purge","Report","JoinDm"]
 		for i in basicCommands:
 			if (await check_config(i.lower(),ctx.message.server, False)==1):
 				cmdEnabled="Enabled"
@@ -386,20 +400,49 @@ async def check(ctx):
 		await bot.say(checkString)
 		#Channels for admins
 		if (ctx.message.author.server_permissions.administrator):
-			ChannelString=""
-			channelId=await check_config('reportChannel',ctx.message.server, True)
+			ChannelString=""		
+		
+			#Report channel
+			reportChannelBroken=False
+			channelId=await check_config('reportChannel',ctx.message.server, True)				
 			if "#" in channelId:
 				channelId=channelId.replace('#', '')
 				reportSendLocation=bot.get_channel(channelId)
-				if (await check_config('report',ctx.message.server, False)==1):
+				if (reportSendLocation!=None):
 					ChannelString=("Report channel is set to "+reportSendLocation.mention)
+				else:
+					ChannelString=("Report channel is **not setup**")
+
 			elif "@" in channelId:
 				channelId=channelId.replace('@', '')
-				reportSendLocation=await bot.get_user_info(channelId)
-				ChannelString=("Report channel is set to **"+reportSendLocation.name+"#"+reportSendLocation.discriminator+"**")
-			channelId=await check_config('joinleaveChannel',ctx.message.server, True)
-			joinleaveChannel=bot.get_channel(channelId)
-			ChannelString=ChannelString + "\nJoin/Leave message channel is set to "+joinleaveChannel.mention
+				try:
+					reportSendLocation=await bot.get_user_info(channelId)
+				except discord.NotFound:
+					reportChannelBroken = True
+				
+				if(reportChannelBroken==False):
+					ChannelString=("Report channel is set to **"+reportSendLocation.name+"#"+reportSendLocation.discriminator+"**")
+				else:
+					ChannelString=("Report channel is **not setup**")
+			else:
+				ChannelString=("Report channel is **not setup**")
+			
+			
+			#Joinleave channel
+			channel=await check_config('joinleaveChannel',ctx.message.server, True)
+			if channel=="":
+				ChannelString=ChannelString + "\nJoin/Leave message channel is **not setup**"
+			else:
+				joinleaveChannel=bot.get_channel(channel)
+				ChannelString=ChannelString + "\nJoin/Leave message channel is set to "+joinleaveChannel.mention
+			
+			
+			#Joindm text
+			joinDmText = (await check_config('joinDmText',ctx.message.server, True))
+			if joinDmText=="":
+				ChannelString=ChannelString + "\nJoin Dm text message is not set up"
+			else:
+				ChannelString=ChannelString + "\nJoin Dm text message is set to: \n```"+joinDmText+"```"
 			await bot.say(ChannelString)
 
 	except:
@@ -407,8 +450,9 @@ async def check(ctx):
 
 #Sets commands
 @bot.command (pass_context=True)
-async def set(ctx, command : str, input : str):
+async def set(ctx, command : str, *args):
 	try:
+		input = args[0]
 		with open('config.json', 'r') as j:
 			config=json.load(j)
 			await update_data(config, ctx.message.server)
@@ -447,6 +491,14 @@ async def set(ctx, command : str, input : str):
 					await bot.say("Set swear blocking level to "+input)
 				else:
 					await bot.say("Invalid level, must be between 0-3")
+					
+			elif (command.lower()=='joindm'):
+				if (len(" ".join(args))<=200):
+					config[ctx.message.server.id]["joinDmText"]=" ".join(args)
+					await bot.say("Join dm message to `"+config[ctx.message.server.id]["joinDmText"]+"`")
+				else:
+					await bot.say("Too many characters, max 200")
+					return
 
 			else:
 				await bot.say("Invalid argument. Do `!help set` for more info")
@@ -560,9 +612,12 @@ async def update_data(config, server):
 		config[server.id]["enabled"]['invite']=0
 		config[server.id]["enabled"]['swear']=1
 		config[server.id]["enabled"]['role']=0
+		config[server.id]["enabled"]['joinDm']=0
 		config[server.id]["joinleaveChannel"]=""
 		config[server.id]["reportChannel"]=""
+		config[server.id]["joinDmText"]=""
 		config[server.id]["role"]={}
+		
 
 #Function to make it easier for commands to check their config
 async def check_config(command, server, outsideEnabled):

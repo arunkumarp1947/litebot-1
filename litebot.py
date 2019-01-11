@@ -12,8 +12,13 @@ bot=Bot(command_prefix="!")
 
 bot.remove_command('help')
 @bot.event
-async def on_read():
-	print("Client logged in")
+async def on_ready():
+	totalMembers=0
+	for s in bot.servers:
+		totalMembers += len(s.members)
+	print(str(totalMembers)+" users in "+str(len(bot.servers))+" servers")
+	print ('Ready\n')
+	print ('(ᵔᴥᵔ)\n')	
 
 #Message on user join
 @bot.async_event
@@ -526,7 +531,7 @@ async def set(ctx, command : str, *args):
 					await bot.say("Invalid level, must be between 0-3")
 			
 			elif (command.lower()=='role'or command.lower()=='roles'):
-				setRoles=" ".join(args).split(',')
+				setRoles=" ".join(args).split(';')
 				for i in setRoles:
 					role=discord.utils.get(ctx.message.server.roles, name=i)
 				if (role==None)or(setRoles.count(i)>1):
@@ -677,9 +682,6 @@ async def check_config(command, server, outsideEnabled):
 			return config[server.id][command]
 	except:
 		return
-
-print ('Ready\n')
-print ('(ᵔᴥᵔ)\n')
 
 #Opens words file
 f=open('words/words1.txt', 'r')

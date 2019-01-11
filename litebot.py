@@ -32,7 +32,7 @@ async def on_member_join(Member : discord.User):
 				joinMsgText="Welcome {user}"
 			if (channel!=None):
 				await bot.send_message(channel,joinMsgText.format(user=Member.mention,server=Member.server.name))
-				
+
 		#Join dm
 		if (await check_config('joinDm',Member.server, False)==1):
 			dmText = (await check_config('joinDmText',Member.server, True))
@@ -41,7 +41,7 @@ async def on_member_join(Member : discord.User):
 			elif (len(dmText)>=200):
 				return
 			await bot.send_message(Member,dmText.format(user=Member.mention,server=Member.server.name))
-		
+
 	except:
 		await bot.say("Error")
 		print("Error")
@@ -65,13 +65,13 @@ async def on_member_remove(Member : discord.User):
 @bot.event
 async def on_message(message, timeout=10):
 	await bot.change_presence(game=discord.Game(name='Protecting the Server | !help'))
-	
+
 	unableToCheckMessages=False
 	if (message.channel.is_private==False and message.author!=message.server.me):
 		if (await check_config('swear', message.author.server, False) >=1):
 			if (message.server.me.server_permissions.manage_messages  or message.server.me.server_permissions.administrator):
 				toDelete=False
-				
+
 				for i in words1:
 					if ((str(i) in message.content.lower()) and (await check_config('swear', message.author.server, False) >=1)):
 						toDelete=True
@@ -101,7 +101,7 @@ async def on_message(message, timeout=10):
 		if "<@405829095054770187>" in message.content:
 			await bot.send_message(message.channel, "Hi, I'm lite-bot, a administrative bot designed to make running a server easier. My prefix is `!` and you can see my commands using `!help`")
 			return
-		
+
 		if (unableToCheckMessages):
 			await bot.send_message(message.channel,"Unable to check messages as I do not have permission to delete messages.\nDisabling Swear Blocking and Invite Blocking now")
 			await bot_disable(message.server, 'swear')
@@ -182,7 +182,7 @@ async def kick(ctx, Member : discord.User):
 			else:
 				if (ctx.message.server.me.server_permissions.kick_members or ctx.message.server.me.server_permissions.administrator):
 					if (ctx.message.author.server_permissions.kick_members or ctx.message.author.server_permissions.administrator):
-						if (ctx.message.author.top_role.position > Member.top_role.position):	
+						if (ctx.message.author.top_role.position > Member.top_role.position):
 							try:
 								await bot.kick(Member)
 								await bot.say("Successfully kicked **" + Member.name + "**")
@@ -431,11 +431,11 @@ async def check(ctx):
 		await bot.say(checkString)
 		#Channels for admins
 		if (ctx.message.author.server_permissions.administrator):
-			ChannelString=""		
-		
+			ChannelString=""
+
 			#Report channel
 			reportChannelBroken=False
-			channelId=await check_config('reportChannel',ctx.message.server, True)				
+			channelId=await check_config('reportChannel',ctx.message.server, True)
 			if "#" in channelId:
 				channelId=channelId.replace('#', '')
 				reportSendLocation=bot.get_channel(channelId)
@@ -450,14 +450,14 @@ async def check(ctx):
 					reportSendLocation=await bot.get_user_info(channelId)
 				except discord.NotFound:
 					reportChannelBroken = True
-				
+
 				if(reportChannelBroken==False):
 					ChannelString=("Report channel is set to **"+reportSendLocation.name+"#"+reportSendLocation.discriminator+"**")
 				else:
 					ChannelString=("Report channel is **not setup**")
 			else:
 				ChannelString=("Report channel is **not setup**")
-			
+
 			#Joinleave channel
 			channel=await check_config('joinleaveChannel',ctx.message.server, True)
 			if channel=="":
@@ -470,7 +470,7 @@ async def check(ctx):
 			if (joinMsgText==""):
 				joinMsgText="Welcome {user}"
 			ChannelString=ChannelString+"\nJoin messages text is set to: \n```"+joinMsgText+"```"
-			
+
 			leaveMsgText = await check_config('leaveMsgText',ctx.message.server, True)
 			if (leaveMsgText==""):
 				leaveMsgText="{user} has left the server"
@@ -529,7 +529,7 @@ async def set(ctx, command : str, *args):
 					await bot.say("Set swear blocking level to "+input)
 				else:
 					await bot.say("Invalid level, must be between 0-3")
-			
+
 			elif (command.lower()=='role'or command.lower()=='roles'):
 				setRoles=" ".join(args).split(';')
 				for i in setRoles:
@@ -552,7 +552,7 @@ async def set(ctx, command : str, *args):
 				with open("config.json", "w") as j:
 					json.dump(config, j, indent=4, sort_keys=True)
 				await bot.say("Succesfully set roles")
-					
+
 			elif (command.lower()=='joindm'):
 				if (len(" ".join(args))<=200):
 					config[ctx.message.server.id]["joinDmText"]=" ".join(args).replace('\\n','\n')
@@ -560,7 +560,7 @@ async def set(ctx, command : str, *args):
 				else:
 					await bot.say("Too many characters, max 200")
 					return
-					
+
 			elif (command.lower()=='joinmsg'):
 				if (len(" ".join(args))<=200):
 					config[ctx.message.server.id]["joinMsgText"]=" ".join(args).replace('\\n','\n')
@@ -568,7 +568,7 @@ async def set(ctx, command : str, *args):
 				else:
 					await bot.say("Too many characters, max 200")
 					return
-					
+
 			elif (command.lower()=='leavemsg'):
 				if (len(" ".join(args))<=200):
 					config[ctx.message.server.id]["leaveMsgText"]=" ".join(args).replace('\\n','\n')
@@ -667,8 +667,8 @@ async def update_data(config, server):
 		config[server.id]["joinDmText"]=""
 		config[server.id]["joinMsgText"]=""
 		config[server.id]["leaveMsgText"]=""
-		config[server.id]["role"]={}
-		
+		config[server.id]["role"]=[]
+
 
 #Function to make it easier for commands to check their config
 async def check_config(command, server, outsideEnabled):
@@ -684,16 +684,9 @@ async def check_config(command, server, outsideEnabled):
 		return
 
 #Opens words file
-f=open('words/words1.txt', 'r')
-words1=f.read().lower().splitlines()
-f=open('words/words2.txt', 'r')
-words2=f.read().lower().splitlines()
-f=open('words/words3.txt', 'r')
-words3=f.read().lower().splitlines()
-
-#Opens discord key file
-f=open('key.config', 'r')
-key=f.read()
+words1=open('words/words1.txt', 'r').read().lower().splitlines()
+words2=open('words/words2.txt', 'r').read().lower().splitlines()
+words3=open('words/words3.txt', 'r').read().lower().splitlines()
 
 #Bot Token
-bot.run(key)
+bot.run(open('key.config', 'r').read())

@@ -26,7 +26,7 @@ async def on_member_join(Member : discord.User):
 			if joinMsgText=="":
 				joinMsgText="Welcome {user}"
 			if (channel!=None):
-				await bot.send_message(channel,joinMsgText.replace('\\n','\n').format(user=Member.mention,server=Member.server.name))
+				await bot.send_message(channel,joinMsgText.format(user=Member.mention,server=Member.server.name))
 				
 		#Join dm
 		if (await check_config('joinDm',Member.server, False)==1):
@@ -35,7 +35,7 @@ async def on_member_join(Member : discord.User):
 				return
 			elif (len(dmText)>=200):
 				return
-			await bot.send_message(Member,dmText.replace('\\n','\n').format(user=Member.name,server=Member.server.name))
+			await bot.send_message(Member,dmText.format(user=Member.mention,server=Member.server.name))
 		
 	except:
 		await bot.say("Error")
@@ -51,7 +51,7 @@ async def on_member_remove(Member : discord.User):
 			if leaveMsgText=="":
 				leaveMsgText="{user} has left the server"
 			if (channel!=None):
-				await bot.send_message(channel,leaveMsgText.replace('\\n','\n').format(user=Member.mention,server=Member.server.name))
+				await bot.send_message(channel,leaveMsgText.format(user=Member.name,server=Member.server.name))
 	except:
 		await bot.say("Error")
 		print("Error")
@@ -453,7 +453,6 @@ async def check(ctx):
 			else:
 				ChannelString=("Report channel is **not setup**")
 			
-			
 			#Joinleave channel
 			channel=await check_config('joinleaveChannel',ctx.message.server, True)
 			if channel=="":
@@ -461,14 +460,22 @@ async def check(ctx):
 			else:
 				joinleaveChannel=bot.get_channel(channel)
 				ChannelString=ChannelString + "\nJoin/Leave message channel is set to "+joinleaveChannel.mention
+			#Join Leave Text
+			joinMsgText = await check_config('joinMsgText',ctx.message.server, True)
+			if (joinMsgText==""):
+				joinMsgText="Welcome {user}"
+			ChannelString=ChannelString+"\nJoin messages text is set to: \n```"+joinMsgText+"```"
 			
-			
+			leaveMsgText = await check_config('leaveMsgText',ctx.message.server, True)
+			if (leaveMsgText==""):
+				leaveMsgText="{user} has left the server"
+			ChannelString=ChannelString+"\nLeave messages text is set to: \n```"+leaveMsgText+"```"
 			#Joindm text
 			joinDmText = (await check_config('joinDmText',ctx.message.server, True))
 			if joinDmText=="":
-				ChannelString=ChannelString + "\nJoin Dm text message is not set up"
+				ChannelString=ChannelString + "\nJoin Dm message text is **not set up**"
 			else:
-				ChannelString=ChannelString + "\nJoin Dm text message is set to: \n```"+joinDmText+"```"
+				ChannelString=ChannelString + "\nJoin Dm message text is set to: \n```"+joinDmText+"```"
 			await bot.say(ChannelString)
 
 	except:
@@ -517,27 +524,50 @@ async def set(ctx, command : str, *args):
 					await bot.say("Set swear blocking level to "+input)
 				else:
 					await bot.say("Invalid level, must be between 0-3")
+			
+			elif (command.lower()=='role'or command.lower()=='roles'):
+				setRoles=" ".join(args).split(',')
+				for i in setRoles:
+					role=discord.utils.get(ctx.message.server.roles, name=i)
+				if (role==None)or(setRoles.count(i)>1):
+					await bot.say("Invalid role(s)")
+					return
+				elif (role.position > ctx.message.server.me.top_role.position):
+					await bot.say("Unable to set, one or more of the roles is above my highest role")
+					return
+				a=0
+				for i in setRoles:
+					role=discord.utils.get(ctx.message.server.roles, name=i)
+					setRoles[a]=role.id
+					a=a+1
+				with open('config.json', 'r') as j:
+					config=json.load(j)
+					await update_data(config, ctx.message.server)
+				config[ctx.message.server.id]["role"]=setRoles
+				with open("config.json", "w") as j:
+					json.dump(config, j)
+				await bot.say("Succesfully set roles")
 					
 			elif (command.lower()=='joindm'):
 				if (len(" ".join(args))<=200):
-					config[ctx.message.server.id]["joinDmText"]=" ".join(args)
-					await bot.say("Join dm message set to `"+config[ctx.message.server.id]["joinDmText"]+"`")
+					config[ctx.message.server.id]["joinDmText"]=" ".join(args).replace('\\n','\n')
+					await bot.say("Join dm message set to ```"+config[ctx.message.server.id]["joinDmText"]+"```")
 				else:
 					await bot.say("Too many characters, max 200")
 					return
 					
 			elif (command.lower()=='joinmsg'):
 				if (len(" ".join(args))<=200):
-					config[ctx.message.server.id]["joinMsgText"]=" ".join(args)
-					await bot.say("Join message set to `"+config[ctx.message.server.id]["joinMsgText"]+"`")
+					config[ctx.message.server.id]["joinMsgText"]=" ".join(args).replace('\\n','\n')
+					await bot.say("Join message set to ```"+config[ctx.message.server.id]["joinMsgText"]+"```")
 				else:
 					await bot.say("Too many characters, max 200")
 					return
 					
 			elif (command.lower()=='leavemsg'):
 				if (len(" ".join(args))<=200):
-					config[ctx.message.server.id]["leaveMsgText"]=" ".join(args)
-					await bot.say("Join message set to `"+config[ctx.message.server.id]["leaveMsgText"]+"`")
+					config[ctx.message.server.id]["leaveMsgText"]=" ".join(args).replace('\\n','\n')
+					await bot.say("Leave message set to ```"+config[ctx.message.server.id]["leaveMsgText"]+"```")
 				else:
 					await bot.say("Too many characters, max 200")
 					return
@@ -551,34 +581,6 @@ async def set(ctx, command : str, *args):
 	except discord.HTTPException:
 		await bot.say("Error")
 		print("Error")
-
-#Command for admins to set user settable roles
-@bot.command (pass_context=True)
-async def setroles(ctx, *args):
-	setRoles=" ".join(args).split(',')
-	if (ctx.message.author.server_permissions.administrator):
-		for i in setRoles:
-			role=discord.utils.get(ctx.message.server.roles, name=i)
-			if (role==None)or(setRoles.count(i)>1):
-				await bot.say("Invalid role(s)")
-				return
-			elif (role.position > ctx.message.server.me.top_role.position):
-				await bot.say("Unable to set, one or more of the roles is above my highest role")
-				return
-		a=0
-		for i in setRoles:
-			role=discord.utils.get(ctx.message.server.roles, name=i)
-			setRoles[a]=role.id
-			a=a+1
-		with open('config.json', 'r') as j:
-			config=json.load(j)
-			await update_data(config, ctx.message.server)
-		config[ctx.message.server.id]["role"]=setRoles
-		with open("config.json", "w") as j:
-			json.dump(config, j)
-		await bot.say("Succesfully set roles")
-	else:
-		await bot.say("You must have admin to change the setable roles")
 
 #Allows users to set their own roles
 @bot.command (pass_context=True)

@@ -18,7 +18,7 @@ async def on_ready():
 		totalMembers += len(s.members)
 	print(str(totalMembers)+" users in "+str(len(bot.servers))+" servers")
 	print ('Ready\n')
-	print ('(ᵔᴥᵔ)\n')	
+	print ('(ᵔᴥᵔ)\n')
 
 #Message on user join
 @bot.async_event

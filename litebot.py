@@ -328,7 +328,7 @@ async def enable(ctx, command : str):
 		else:
 			bot.say("You must have administrator to enable or disable a command")
 		with open("config.json", "w") as j:
-			json.dump(config, j)
+			json.dump(config, j, indent=4, sort_keys=True)
 	except:
 		await bot.say("Error")
 		print("Error")
@@ -376,7 +376,7 @@ async def disable(ctx, command : str):
 		else:
 			bot.say("You must have administrator to set a command")
 		with open("config.json", "w") as j:
-			json.dump(config, j)
+			json.dump(config, j, indent=4, sort_keys=True)
 	except:
 		await bot.say("Error")
 		print("Error")
@@ -550,7 +550,7 @@ async def set(ctx, command : str, *args):
 					await update_data(config, ctx.message.server)
 				config[ctx.message.server.id]["role"]=setRoles
 				with open("config.json", "w") as j:
-					json.dump(config, j)
+					json.dump(config, j, indent=4, sort_keys=True)
 				await bot.say("Succesfully set roles")
 					
 			elif (command.lower()=='joindm'):
@@ -582,7 +582,7 @@ async def set(ctx, command : str, *args):
 		else:
 			bot.say("You must have administrator to enable or disable a command")
 		with open("config.json", "w") as j:
-			json.dump(config, j)
+			json.dump(config, j, indent=4, sort_keys=True)
 	except discord.HTTPException:
 		await bot.say("Error")
 		print("Error")
@@ -645,7 +645,7 @@ async def bot_disable(server, command):
 		await update_data(config, server)
 	config[server.id]["enabled"][command]=0
 	with open("config.json", "w") as j:
-		json.dump(config, j)
+		json.dump(config, j, indent=4, sort_keys=True)
 
 #Function to update json file
 async def update_data(config, server):

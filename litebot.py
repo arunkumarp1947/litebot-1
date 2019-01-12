@@ -34,7 +34,7 @@ def updateConsole():
 	totalMembers=0
 	for s in bot.servers:
 		totalMembers += len(s.members)
-	print("{members} users in {servers} servers".format(members=str(totalMembers),servers=str(len(bot.servers))), end='\r')
+	print("\r{members} users in {servers} servers".format(members=str(totalMembers),servers=str(len(bot.servers))))
 	with open('servers.txt', 'w') as f:
 		for item in bot.servers:
 			f.write("%s\n" % item)
@@ -60,7 +60,7 @@ async def on_member_join(Member : discord.User):
 			elif (len(dmText)>=200):
 				return
 			await bot.send_message(Member,dmText.format(user=Member.mention,server=Member.server.name))
-
+		updateConsole()
 	except:
 		await bot.say("Error")
 		print("Error")
@@ -76,6 +76,7 @@ async def on_member_remove(Member : discord.User):
 				leaveMsgText="{user} has left the server"
 			if (channel!=None):
 				await bot.send_message(channel,leaveMsgText.format(user=Member.name,server=Member.server.name))
+		updateConsole()
 	except:
 		await bot.say("Error")
 		print("Error")

@@ -263,7 +263,9 @@ async def report(ctx, Member : discord.User, *args):
 		return
 #Purges messages
 @bot.command (pass_context=True)#Need to add perm checker
-async def purge(ctx, numPurge : int,):
+async def purge(ctx, numPurge: int, member: discord.Member = None):
+	def predicate(msg: discord.Message) -> bool:
+		return member is None or msg.author == member
 	try:
 		if (await check_config('purge',ctx.message.author.server, False)==1):
 			if (ctx.message.server.me.server_permissions.manage_messages or ctx.message.server.me.server_permissions.administrator):
@@ -271,7 +273,7 @@ async def purge(ctx, numPurge : int,):
 					if(numPurge >=0 and numPurge <=100):
 						await bot.delete_message(ctx.message)
 						try:
-							await bot.purge_from(ctx.message.channel,limit=numPurge)
+							await bot.purge_from(ctx.message.channel,limit=numPurge,check=predicate)
 						except:
 							await bot.say("Unable to purge messages")
 					else:

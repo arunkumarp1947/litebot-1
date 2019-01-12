@@ -1,6 +1,7 @@
 import discord
 import json
 import os
+import sys
 from datetime import datetime
 from discord.ext import commands
 from discord.ext.commands import Bot
@@ -13,15 +14,30 @@ bot=Bot(command_prefix="!")
 bot.remove_command('help')
 @bot.event
 async def on_ready():
-	totalMembers=0
-	for s in bot.servers:
-		totalMembers += len(s.members)
-	print(str(totalMembers)+" users in "+str(len(bot.servers))+" servers")
 	print ('Ready\n')
 	print("       _             ")
 	print("   .__(.)< (MEOW)    ")
 	print("   \___)             ")
 	print("~~~~~~~~~~~~~~~~~~~~~")
+	updateConsole()
+
+
+@bot.async_event
+async def on_server_join(Server : discord.Server):
+	updateConsole()
+			
+@bot.async_event
+async def on_server_remove(Server : discord.Server):
+	updateConsole()
+			
+def updateConsole():
+	totalMembers=0
+	for s in bot.servers:
+		totalMembers += len(s.members)
+	print("{members} users in {servers} servers".format(members=str(totalMembers),servers=str(len(bot.servers))), end='\r')
+	with open('servers.txt', 'w') as f:
+		for item in bot.servers:
+			f.write("%s\n" % item)
 
 #Message on user join
 @bot.async_event
@@ -103,10 +119,13 @@ async def on_message(message, timeout=10):
 				unableToCheckMessages=True
 
 		if (unableToCheckMessages):
-			await bot.send_message(message.channel,"Unable to check messages as I do not have permission to delete messages.\nDisabling Swear Blocking and Invite Blocking now")
-			await bot_disable(message.server, 'swear')
-			await bot_disable(message.server, 'invite')
-			unableToCheckMessages=False
+			try:
+				await bot_disable(message.server, 'swear')
+				await bot_disable(message.server, 'invite')
+				await bot.send_message(message.channel,"Unable to check messages as I do not have permission to delete messages.\nDisabling Swear Blocking and Invite Blocking now")
+				unableToCheckMessages=False
+			except:
+				return
 		await bot.process_commands(message)
 		
 		if ("<@405829095054770187>" in message.content)and("!purge" not in message.content):

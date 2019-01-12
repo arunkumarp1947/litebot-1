@@ -21,7 +21,6 @@ async def on_ready():
 	print("~~~~~~~~~~~~~~~~~~~~~")
 	updateConsole()
 
-
 @bot.async_event
 async def on_server_join(Server : discord.Server):
 	updateConsole()
@@ -31,10 +30,7 @@ async def on_server_remove(Server : discord.Server):
 	updateConsole()
 			
 def updateConsole():
-	totalMembers=0
-	for s in bot.servers:
-		totalMembers += len(s.members)
-	print("\r{members} users in {servers} servers".format(members=str(totalMembers),servers=str(len(bot.servers))))
+	print("\r{members} users in {servers} servers".format(members=str(len(set(bot.get_all_members()))-1),servers=str(len(bot.servers))))
 	with open('servers.txt', 'w') as f:
 		for item in bot.servers:
 			f.write("%s\n" % item)
@@ -170,7 +166,7 @@ async def help(ctx, *args):
 			await bot.say("Mass deletes messages\n`!purge 30`")
 		elif ("".join(args)=="report"):
 			await bot.say("Sends a report to the server's owner, requires double quotes around the report content\n`!report @user#0000 \"Stealing the Village gold\"`")
-		elif ("".join(args)=="set"):
+		elif ("".join(args)=="config"):
 			await bot.say("Sets a command to a value\n `!set join #general`")
 		elif ("".join(args)=="enable"or"".join(args)=="disable"):
 			await bot.say("Enables or disables a command\n `!enable kick`")
@@ -188,7 +184,7 @@ async def help(ctx, *args):
 			embed.add_field(name="!report", value="!report @user#0000 \"Report Content\"", inline=False)
 			embed.add_field(name="!enable", value="!enable <kick>", inline=False)
 			embed.add_field(name="!disable", value="!disable <command>", inline=False)
-			embed.add_field(name="!set", value="!set <command> <channel>", inline=False)
+			embed.add_field(name="!config", value="!set <command> <channel>", inline=False)
 			embed.add_field(name="!check", value="!check", inline=False)
 			embed.add_field(name="!role", value="!role <role name>", inline=False)
 			embed.add_field(name="!setroles", value="!setroles <rolename>,<another rolename>", inline=False)
@@ -514,7 +510,7 @@ async def check(ctx):
 
 #Sets commands
 @bot.command (pass_context=True)
-async def set(ctx, command : str, *args):
+async def config(ctx, command : str, *args):
 	try:
 		input = args[0]
 		with open('config.json', 'r') as j:

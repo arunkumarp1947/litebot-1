@@ -98,9 +98,6 @@ async def on_message(message, timeout=10):
 					return
 			else:
 				unableToCheckMessages=True
-		if "<@405829095054770187>" in message.content:
-			await bot.send_message(message.channel, "Hi, I'm lite-bot, a administrative bot designed to make running a server easier. My prefix is `!` and you can see my commands using `!help`")
-			return
 
 		if (unableToCheckMessages):
 			await bot.send_message(message.channel,"Unable to check messages as I do not have permission to delete messages.\nDisabling Swear Blocking and Invite Blocking now")
@@ -108,6 +105,10 @@ async def on_message(message, timeout=10):
 			await bot_disable(message.server, 'invite')
 			unableToCheckMessages=False
 		await bot.process_commands(message)
+		
+		if ("<@405829095054770187>" in message.content)and("!purge" not in message.content):
+			await bot.send_message(message.channel, "Hi, I'm lite-bot, a administrative bot designed to make running a server easier. My prefix is `!` and you can see my commands using `!help`")
+			return
 		runOnce=False
 		async for message in bot.logs_from(message.channel,limit=2):
 			if runOnce==False:
@@ -602,7 +603,7 @@ async def role(ctx, *args):
 				a+=1
 			if None in roleList:
 				await bot.say("Unable to find roles, try `!setroles` to reset them")
-			elif (str(roleList)=="{}"):
+			elif len(roleList) == 0:
 				await bot.say("No roles have been set using `!setroles`\nDisabling !role now")
 				await bot_disable(ctx.message.server, 'role')
 			else:

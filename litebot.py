@@ -30,7 +30,7 @@ async def on_server_remove(Server : discord.Server):
 	updateConsole()
 			
 def updateConsole():
-	print("\r{members} users in {servers} servers".format(members=str(len(set(bot.get_all_members()))-1),servers=str(len(bot.servers))))
+	print("{members} users in {servers} servers".format(members=str(len(set(bot.get_all_members()))-1),servers=str(len(bot.servers))),end='\r')
 	with open('servers.txt', 'w') as f:
 		for item in bot.servers:
 			f.write("%s\n" % item)
@@ -58,7 +58,6 @@ async def on_member_join(Member : discord.User):
 			await bot.send_message(Member,dmText.format(user=Member.mention,server=Member.server.name))
 		updateConsole()
 	except:
-		await bot.say("Error")
 		print("Error")
 
 #Message on user leave
@@ -74,7 +73,6 @@ async def on_member_remove(Member : discord.User):
 				await bot.send_message(channel,leaveMsgText.format(user=Member.name,server=Member.server.name))
 		updateConsole()
 	except:
-		await bot.say("Error")
 		print("Error")
 
 #Deletes messages that include key words, and discord invites
@@ -163,31 +161,29 @@ async def help(ctx, *args):
 		elif ("".join(args)=="ban"):
 			await bot.say("Bans an user and deletes their messages from the past 3 days\n`!ban @user#0000`")
 		elif ("".join(args)=="purge"):
-			await bot.say("Mass deletes messages\n`!purge 30`")
+			await bot.say("Mass deletes messages, can also purge a specific user\n`!purge 30 @user#0000`")
 		elif ("".join(args)=="report"):
-			await bot.say("Sends a report to the server's owner, requires double quotes around the report content\n`!report @user#0000 \"Stealing the Village gold\"`")
+			await bot.say("Sends a report to the server\n`!report @user#0000 Stealing the Village gold`")
 		elif ("".join(args)=="config"):
-			await bot.say("Sets a command to a value\n `!set join #general`")
+			await bot.say("Sets a `role`, `swear`, `joinleave`, `joindm`, `joinmsg`, or `leavemsg` to a value, use `;` to seperate values\n `!set joinleave #general`")
 		elif ("".join(args)=="enable"or"".join(args)=="disable"):
 			await bot.say("Enables or disables a command\n `!enable kick`")
 		elif ("".join(args)=="check"):
 			await bot.say("Checks what the server config is set to\n `!check`")
 		elif ("".join(args)=="role"):
 			await bot.say("Sets you to a role\n `!role role1`")
-		elif ("".join(args)=="setroles"):
-			await bot.say("Sets the roles a user can set themselves to\n `!setroles role1,a role,role2`")
 		else:
 			embed=discord.Embed(title="Help")
 			embed.add_field(name="!kick", value="!kick @user#0000", inline=False)
 			embed.add_field(name="!ban", value="!ban @user#0000", inline=False)
 			embed.add_field(name="!purge", value="!purge <NumberOfMessages>", inline=False)
 			embed.add_field(name="!report", value="!report @user#0000 \"Report Content\"", inline=False)
-			embed.add_field(name="!enable", value="!enable <kick>", inline=False)
-			embed.add_field(name="!disable", value="!disable <command>", inline=False)
-			embed.add_field(name="!config", value="!set <command> <channel>", inline=False)
-			embed.add_field(name="!check", value="!check", inline=False)
 			embed.add_field(name="!role", value="!role <role name>", inline=False)
-			embed.add_field(name="!setroles", value="!setroles <rolename>,<another rolename>", inline=False)
+			embed.add_field(name="!check", value="!check", inline=False)
+			if(ctx.message.author.server_permissions.administrator):
+				embed.add_field(name="!enable", value="!enable <kick>", inline=False)
+				embed.add_field(name="!disable", value="!disable <command>", inline=False)
+				embed.add_field(name="!config", value="!set <command> <channel>", inline=False)
 			await bot.say(embed=embed)
 	except:
 		await bot.say("Error")
@@ -556,7 +552,7 @@ async def config(ctx, command : str, *args):
 				setRoles=" ".join(args).split(';')
 				for i in setRoles:
 					role=discord.utils.get(ctx.message.server.roles, name=i)
-				if (role==None)or(setRoles.count(i)>1):
+				if (role==None)or(setRoles.count(i)>1)or(role.position >= ctx.message.author.top_role.position)or(role.managed):
 					await bot.say("Invalid role(s)")
 					return
 				elif (role.position > ctx.message.server.me.top_role.position):

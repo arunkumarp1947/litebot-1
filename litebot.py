@@ -714,6 +714,8 @@ if (os.path.exists('config.json')==False):
 	
 if (os.path.exists('key.config')==False):
 	open('key.config', "w")
+	print("Unable to run litebot, add your key to key.config")
+	quit()
 words1=open('words/words1.txt', 'r').read().lower().splitlines()
 words2=open('words/words2.txt', 'r').read().lower().splitlines()
 words3=open('words/words3.txt', 'r').read().lower().splitlines()

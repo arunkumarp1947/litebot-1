@@ -702,6 +702,18 @@ async def check_config(command, server, outsideEnabled):
 		return
 
 #Opens words file
+if (os.path.exists('words')==False):
+	os.mkdir('words')
+i=1
+while (i<=3):
+	if (os.path.exists('words/words'+str(i)+'.txt')==False):
+		open('words/words'+str(i)+'.txt', "w")
+	i+=1
+if (os.path.exists('config.json')==False):
+	open('config.json', "w")
+	
+if (os.path.exists('key.config')==False):
+	open('key.config', "w")
 words1=open('words/words1.txt', 'r').read().lower().splitlines()
 words2=open('words/words2.txt', 'r').read().lower().splitlines()
 words3=open('words/words3.txt', 'r').read().lower().splitlines()

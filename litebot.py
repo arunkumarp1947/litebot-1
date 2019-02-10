@@ -575,9 +575,9 @@ async def config(ctx, command: str, *args):
 				setRoles = " ".join(args).split(';')
 				for i in setRoles:
 					role = discord.utils.get(ctx.message.server.roles, name=i)
-				if (role == None)or(setRoles.count(i) > 1)or(role.position >= ctx.message.author.top_role.position)or(role.managed):
-					await bot.say("Invalid role(s)")
-					return
+					if (role == None)or(setRoles.count(i) > 1)or(role.position >= ctx.message.author.top_role.position)or(role.managed):
+						await bot.say("Invalid role(s)")
+						return
 				elif (role.position > ctx.message.server.me.top_role.position):
 					await bot.say("Unable to set, one or more of the roles is above my highest role")
 					return

@@ -370,6 +370,9 @@ async def enable(ctx, command: str):
 			elif (command.lower() == 'joindm'):
 				config[ctx.message.server.id]["enabled"]['joinDm'] = 1
 				await bot.say("Dm on join has been enabled")
+			elif (command.lower() == 'link'):
+				config[ctx.message.server.id]["enabled"]['link'] = 1
+				await bot.say("Link blocking has been enabled")			
 			else:
 				await bot.say("Invalid argument. Do `!help enable` for more info")
 		else:
@@ -418,6 +421,9 @@ async def disable(ctx, command: str):
 			elif (command.lower() == 'joindm'):
 				config[ctx.message.server.id]["enabled"]['joinDm'] = 0
 				await bot.say("Dm on join has been disabled")
+			elif (command.lower() == 'link'):
+				config[ctx.message.server.id]["enabled"]['link'] = 0
+				await bot.say("Link blocking has been disabled")		
 			else:
 				await bot.say("Invalid argument. Do `!help disable` for more info")
 		else:
@@ -461,11 +467,21 @@ async def check(ctx):
 			cmdEnabled = "Disabled"
 		stringAddition = ("Invite blocking is **"+cmdEnabled+"**\n")
 		checkString = checkString + stringAddition
+		
+		#Link Blocking
+		if (await check_config('link', ctx.message.server, False) == 1):
+			cmdEnabled = "Enabled"
+		else:
+			cmdEnabled = "Disabled"
+		stringAddition = ("Link blocking is **"+cmdEnabled+"**\n")
+		checkString = checkString + stringAddition
 
 		#Swear Blocking
 		cmd2Enabled = await check_config('swear', ctx.message.server, False)
 		swearEnabled = ("Swear blocking is set to **"+str(cmd2Enabled)+"**\n")
 		checkString = checkString + swearEnabled
+		
+
 
 		#Self role setting
 		if (await check_config("role", ctx.message.server, False) == 1):
@@ -726,6 +742,7 @@ async def update_data(config, server):
 		config[server.id]["enabled"]['swear'] = 1
 		config[server.id]["enabled"]['role'] = 0
 		config[server.id]["enabled"]['joinDm'] = 0
+		config[server.id]["enabled"]['link'] = 0
 		config[server.id]["joinleaveChannel"] = ""
 		config[server.id]["reportChannel"] = ""
 		config[server.id]["joinDmText"] = ""

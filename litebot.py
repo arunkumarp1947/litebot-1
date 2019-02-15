@@ -565,7 +565,7 @@ async def config(ctx, command: str, *args):
 			await update_data(config, ctx.message.server)
 
 		if (ctx.message.author.server_permissions.administrator):
-
+			#Join/leave channel
 			if (command.lower() == 'join' or command.lower() == 'leave' or command.lower() == 'joinleave'):
 				channelId = input.replace('#', '').replace(
 					'<', '').replace('>', '')
@@ -575,7 +575,7 @@ async def config(ctx, command: str, *args):
 				else:
 					await bot.say("Set join & leave messages channel to "+input)
 					config[ctx.message.server.id]["joinleaveChannel"] = channelId
-
+			#Report channel
 			elif (command.lower() == 'report'):
 				channelId = input.replace('<', '').replace(
 					'>', '').replace('!', '')
@@ -593,7 +593,7 @@ async def config(ctx, command: str, *args):
 					config[ctx.message.server.id]["reportChannel"] = channelId
 				else:
 					await bot.say("Invalid channel name")
-
+			#Swear blocking level
 			elif (command.lower() == 'swear'):
 				if (int(input) >= 0 and int(input) <= 3):
 					config[ctx.message.server.id]["enabled"]["swear"] = int(
@@ -601,7 +601,7 @@ async def config(ctx, command: str, *args):
 					await bot.say("Set swear blocking level to "+input)
 				else:
 					await bot.say("Invalid level, must be between 0-3")
-
+			#Roles
 			elif (command.lower() == 'role'or command.lower() == 'roles'):
 				setRoles = " ".join(args).split(';')
 				for i in setRoles:
@@ -624,11 +624,10 @@ async def config(ctx, command: str, *args):
 				with open("config.json", "w") as j:
 					json.dump(config, j, indent=4, sort_keys=True)
 				await bot.say("Succesfully set roles")
-
+			#Join dm
 			elif (command.lower() == 'joindm'):
 				if (len(" ".join(args)) <= 200):
-					config[ctx.message.server.id]["joinDmText"] = " ".join(
-						args).replace('\\n', '\n')
+					config[ctx.message.server.id]["joinDmText"] = " ".join(args).replace('\\n', '\n')
 					await bot.say("Join dm message set to ```"+config[ctx.message.server.id]["joinDmText"]+"```")
 				else:
 					await bot.say("Too many characters, max 200")
@@ -636,8 +635,7 @@ async def config(ctx, command: str, *args):
 
 			elif (command.lower() == 'joinmsg'):
 				if (len(" ".join(args)) <= 200):
-					config[ctx.message.server.id]["joinMsgText"] = " ".join(
-						args).replace('\\n', '\n')
+					config[ctx.message.server.id]["joinMsgText"] = " ".join(args).replace('\\n', '\n')
 					await bot.say("Join message set to ```"+config[ctx.message.server.id]["joinMsgText"]+"```")
 				else:
 					await bot.say("Too many characters, max 200")
@@ -645,8 +643,7 @@ async def config(ctx, command: str, *args):
 
 			elif (command.lower() == 'leavemsg'):
 				if (len(" ".join(args)) <= 200):
-					config[ctx.message.server.id]["leaveMsgText"] = " ".join(
-						args).replace('\\n', '\n')
+					config[ctx.message.server.id]["leaveMsgText"] = " ".join(args).replace('\\n', '\n')
 					await bot.say("Leave message set to ```"+config[ctx.message.server.id]["leaveMsgText"]+"```")
 				else:
 					await bot.say("Too many characters, max 200")

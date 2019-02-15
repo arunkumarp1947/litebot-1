@@ -499,29 +499,30 @@ async def check(ctx):
 			# Report channel
 			reportChannelBroken = False
 			channelId = await check_config('reportChannel', ctx.message.server, True)
-			if "#" in channelId:
-				channelId = channelId.replace('#', '')
-				reportSendLocation = bot.get_channel(channelId)
-				if (reportSendLocation != None):
-					ChannelString = (
-						"Report channel is set to "+reportSendLocation.mention)
+			if (await check_config('report', ctx.message.server, False) == 1):
+				if "#" in channelId:
+					channelId = channelId.replace('#', '')
+					reportSendLocation = bot.get_channel(channelId)
+					if (reportSendLocation != None):
+						ChannelString = (
+							"Report channel is set to "+reportSendLocation.mention)
+					else:
+						ChannelString = ("Report channel is **not setup**")
+
+				elif "@" in channelId:
+					channelId = channelId.replace('@', '')
+					try:
+						reportSendLocation = await bot.get_user_info(channelId)
+					except discord.NotFound:
+						reportChannelBroken = True
+
+					if(reportChannelBroken == False):
+						ChannelString = (
+							"Report channel is set to **"+reportSendLocation.name+"#"+reportSendLocation.discriminator+"**")
+					else:
+						ChannelString = ("Report channel is **not setup**")
 				else:
 					ChannelString = ("Report channel is **not setup**")
-
-			elif "@" in channelId:
-				channelId = channelId.replace('@', '')
-				try:
-					reportSendLocation = await bot.get_user_info(channelId)
-				except discord.NotFound:
-					reportChannelBroken = True
-
-				if(reportChannelBroken == False):
-					ChannelString = (
-						"Report channel is set to **"+reportSendLocation.name+"#"+reportSendLocation.discriminator+"**")
-				else:
-					ChannelString = ("Report channel is **not setup**")
-			else:
-				ChannelString = ("Report channel is **not setup**")
 
 			# Joinleave channel
 			channel = await check_config('joinleaveChannel', ctx.message.server, True)

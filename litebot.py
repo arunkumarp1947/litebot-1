@@ -196,23 +196,16 @@ async def help(ctx, *args):
 		await bot.say("Sets you to a role\n `!role role1`")
 	else:
 		embed = discord.Embed(title="Help")
-		embed.add_field(
-			name="!kick", value="!kick @user#0000", inline=False)
+		embed.add_field(name="!kick", value="!kick @user#0000", inline=False)
 		embed.add_field(name="!ban", value="!ban @user#0000", inline=False)
-		embed.add_field(
-			name="!purge", value="!purge <NumberOfMessages>", inline=False)
-		embed.add_field(
-			name="!report", value="!report @user#0000 \"Report Content\"", inline=False)
-		embed.add_field(
-			name="!role", value="!role <role name>", inline=False)
+		embed.add_field(name="!purge", value="!purge <NumberOfMessages>", inline=False)
+		embed.add_field(name="!report", value="!report @user#0000 \"Report Content\"", inline=False)
+		embed.add_field(name="!role", value="!role <role name>", inline=False)
 		embed.add_field(name="!check", value="!check", inline=False)
-		if(ctx.message.author.server_permissions.administrator):
-			embed.add_field(
-				name="!enable", value="!enable <command>", inline=False)
-			embed.add_field(
-				name="!disable", value="!disable <command>", inline=False)
-			embed.add_field(
-				name="!config", value="!config <command> <channel>", inline=False)
+		if (ctx.message.author.server_permissions.administrator):
+			embed.add_field(name="!enable", value="!enable <command>", inline=False)
+			embed.add_field(name="!disable", value="!disable <command>", inline=False)
+			embed.add_field(name="!config", value="!config <command> <channel>", inline=False)
 		await bot.say(embed=embed)
 
 # Kick user
@@ -303,6 +296,7 @@ async def report(ctx, Member: discord.User, *args):
 								 Member.name+"#"+Member.discriminator)
 				await bot.send_message(reportSendLocation, embed=embed)
 			else:
+				await bot.say("No report channel has been setup")
 				await bot.send_message(ctx.message.author, "Your report against **"+Member.name+"#"+Member.discriminator+"** was unable to be submitted")
 		else:
 			await bot.say("Report is disabled")
@@ -632,7 +626,8 @@ async def check(ctx):
 @bot.command(pass_context=True)
 async def config(ctx, command: str, *args):
 	try:
-		input = args[0]
+		if (len(args)>0):
+			input = args[0]
 		with open('config.json', 'r') as j:
 			config = json.load(j)
 			await update_data(config, ctx.message.server)
@@ -719,10 +714,15 @@ async def config(ctx, command: str, *args):
 				else:
 					await bot.say("Too many characters, max 200")
 					return
+			elif (command.lower() == 'clear'):
+				await bot.say("Are you sure you want to clear this my config for this server? Type `confirm` if you're sure")
+				await bot.wait_for_message(timeout=20, author=ctx.message.author,content='confirm')
+				del config[ctx.message.server.id]
+				await bot.say("Cleared this server's config")
 			else:
 				await bot.say("Invalid argument. Do `!help set` for more info")
 		else:
-			bot.say("You must have administrator to enable or disable a command")
+			bot.say("You must have administrator to configure a command")
 		with open("config.json", "w") as j:
 			json.dump(config, j, indent=4, sort_keys=True)
 	except discord.HTTPException:
@@ -839,7 +839,9 @@ while (i <= 3):
 		open('words/words'+str(i)+'.txt', "w")
 	i += 1
 if (os.path.exists('config.json') == False):
-	open('config.json', "w")
+	config = {}
+	with open("config.json", "w") as j:
+		json.dump(config, j)
 
 if (os.path.exists('key.config') == False):
 	open('key.config', "w")

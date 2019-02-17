@@ -179,64 +179,95 @@ async def on_command_error(error, ctx):
 @bot.command(pass_context=True)
 async def help(ctx, *args):
 	#Ping
-	if ("".join(args) == "ping"):
+	input=("".join(args)).lower()
+	if (input == "ping"):
 		embed=discord.Embed(title="Ping",color=0xff8000)
 		embed.add_field(name="Description", value="Displays the latency between discord and litebot", inline=False)
 		embed.add_field(name="Usage", value="`!ping`", inline=False)
 		await bot.say(embed=embed)
 	#Role
-	elif ("".join(args) == "role"):
+	elif (input == "role"):
 		embed=discord.Embed(title="Role",color=0xff8000)
 		embed.add_field(name="Description", value="Allows users to add or remove themselves from roles easily.", inline=False)
 		embed.add_field(name="Usage", value="`!role <role name>`", inline=False)
 		await bot.say(embed=embed)
 	#Report
-	elif ("".join(args) == "report"):
+	elif (input == "report"):
 		embed=discord.Embed(title="Report",color=0xff8000)
 		embed.add_field(name="Description", value="Use report to report misbehaving users to the server admin. Messages are deleted after you send them so there's no need to worry about them finding out", inline=False)
 		embed.add_field(name="Usage", value="`!report @username#0000 Stealing the village gold`", inline=False)
 		await bot.say(embed=embed)
 	#Kick
-	elif ("".join(args) == "kick"):
+	elif (input == "kick"):
 		embed=discord.Embed(title="Kick",color=0xff8000)
 		embed.add_field(name="Description", value="Kicks a user from the server.", inline=False)
 		embed.add_field(name="Usage", value="`!kick @username#0000`", inline=False)
 		await bot.say(embed=embed)
 	#Ban
-	elif ("".join(args) == "ban"):
+	elif (input == "ban"):
 		embed=discord.Embed(title="Kick",color=0xff8000)
 		embed.add_field(name="Description", value="Bans a user from the server. You can optionally specify an amount of days of which that user's messages will be deleted.", inline=False)
 		embed.add_field(name="Usage", value="`!ban @username#0000 <Days of messages to delete`", inline=False)
 		await bot.say(embed=embed)
 	#Purge
-	elif ("".join(args) == "purge"):
+	elif (input == "purge"):
 		embed=discord.Embed(title="Purge",color=0xff8000)
 		embed.add_field(name="Description", value="Mass deletes up to 100 messages in the current channel. Can optionally specify a single user to delete messages by.", inline=False)
 		embed.add_field(name="Usage", value="`!purge 40 @username#0000`", inline=False)
 		await bot.say(embed=embed)
 	#Config
-	elif ("".join(args) == "config"):
+	elif (input == "config"):
 		embed=discord.Embed(title="Config",color=0xff8000)
 		embed.add_field(name="Description", value="Edits the config for the server. Can configure `joinmsg`, `leavemsg`, `swear`, `joindm` or `roles`.\nTo configure what roles a user can add themselves to using `!role` do `!config roles <role1>;<role2>;<role3>` with `;` seperating the role names", inline=False)
 		embed.add_field(name="Usage", value="`!config <command> <value>`", inline=False)
 		await bot.say(embed=embed)
 	#Enable
-	elif ("".join(args) == "enable"):
+	elif (input == "enable"):
 		embed=discord.Embed(title="Enable",color=0xff8000)
 		embed.add_field(name="Description", value="Enables a command. Can enable `!kick`, `!role`, `!report`, `join messages`, `leave messages`, `swear blocking`, `invite blocking`, `link blocking`, and `Join DM`.", inline=False)
 		embed.add_field(name="Usage", value="`!enable <command>`", inline=False)
 		await bot.say(embed=embed)
 	#Disable
-	elif ("".join(args) == "disable"):
+	elif (input == "disable"):
 		embed=discord.Embed(title="Disable",color=0xff8000)
 		embed.add_field(name="Description", value="Disables a command. Can disable `!kick`, `!role`, `!report`, `join messages`, `leave messages`, `swear blocking`, `invite blocking`, `link blocking`, and `Join DM`", inline=False)
 		embed.add_field(name="Usage", value="`!disable <command>`", inline=False)
 		await bot.say(embed=embed)
 	#Check
-	elif ("".join(args) == "check"):
+	elif (input == "check"):
 		embed=discord.Embed(title="Check",color=0xff8000)
 		embed.add_field(name="Description", value="Displays the servers config", inline=False)
 		embed.add_field(name="Usage", value="`!check`", inline=False)
+		await bot.say(embed=embed)
+	#Join Message
+	elif (input == "join" or input == "join message" or input == "joinmsg"):
+		embed=discord.Embed(title="Join Message",color=0xff8000)
+		embed.add_field(name="Description", value="Sends a message when a user joins the server. Set the message using `!config joinmsg <Join Message Text>` Use `{user}` and `{server}` to put the users or servers name in.", inline=False)
+		await bot.say(embed=embed)
+	#Leave Message
+	elif (input == "leave" or input == "leave message" or input == "leavemsg"):
+		embed=discord.Embed(title="Leave Message",color=0xff8000)
+		embed.add_field(name="Description", value="Sends a message when a user leaves the server. Set the message using `!config leavemsg <Leave Message Text>` Use `{user}` and `{server}` to put the users or servers name in.", inline=False)
+		await bot.say(embed=embed)
+	#Swear blocking
+	elif (input == "swear" or input == "swear blocking"):
+		embed=discord.Embed(title="Swear Blocking",color=0xff8000)
+		embed.add_field(name="Description", value="Deletes messages containing swear words. Set the swear blocking level using `!config swear <value>`.", inline=False)
+		await bot.say(embed=embed)
+	#Link blocking
+	elif (input == "link" or input == "link blocking"):
+		embed=discord.Embed(title="Link Blocking",color=0xff8000)
+		embed.add_field(name="Description", value="Deletes messages containing links. Won't delete messages by admins", inline=False)
+		await bot.say(embed=embed)
+	#Invite blocking
+	elif (input == "invite" or input == "invite blocking"):
+		embed=discord.Embed(title="Invite Blocking",color=0xff8000)
+		embed.add_field(name="Description", value="Deletes messages containing discord server invites. Won't delete messages by admins", inline=False)
+		await bot.say(embed=embed)
+	#JoinDM
+	elif (input == "joindm" or input == "join dm"):
+		embed=discord.Embed(title="Join DM",color=0xff8000)
+		embed.add_field(name="Description", value="Sends a message to users that join the server. The message can be set using `!config joindm <Join Message Text>`. Use `{user}` and `{server}` to put the users or servers name in.", inline=False)
 		await bot.say(embed=embed)
 	else:
 		embed=discord.Embed(color=0xff8000)

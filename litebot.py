@@ -729,6 +729,13 @@ async def config(ctx, command: str, *args):
 		await bot.say("Error")
 		print("Error")
 
+#Check latency of bot
+@bot.command(pass_context=True)
+async def ping(ctx):
+    t = await bot.say('Pong!')
+    ms = (t.timestamp-ctx.message.timestamp).total_seconds() * 1000
+    await bot.edit_message(t, new_content='Pong! Took: {}ms'.format(int(ms)))
+		
 # Allows users to set their own roles
 @bot.command(pass_context=True)
 async def role(ctx, *args):
@@ -838,6 +845,7 @@ while (i <= 3):
 	if (os.path.exists('words/words'+str(i)+'.txt') == False):
 		open('words/words'+str(i)+'.txt', "w")
 	i += 1
+
 if (os.path.exists('config.json') == False):
 	config = {}
 	with open("config.json", "w") as j:

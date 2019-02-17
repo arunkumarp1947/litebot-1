@@ -565,7 +565,7 @@ async def check(ctx):
 			cmdEnabled = "Enabled"
 		else:
 			cmdEnabled = "Disabled"
-		checkString+=("Self role setting is **"+cmdEnabled+"**")
+		checkString+=("Self role setting is **"+cmdEnabled+"**\n")
 		# Channels for admins
 		if (ctx.message.author.server_permissions.administrator):
 			# Report channel

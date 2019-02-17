@@ -735,26 +735,27 @@ async def config(ctx, command: str, *args):
 			elif (command.lower() == 'joindm'):
 				if (len(" ".join(args)) <= 200):
 					config[ctx.message.server.id]["joinDmText"] = " ".join(args).replace('\\n', '\n')
-					await bot.say("Join dm message set to ```"+config[ctx.message.server.id]["joinDmText"]+"```")
+					await bot.say("Join dm message set to ```"+config[ctx.message.server.id]["joinDmText"]+"\n```")
 				else:
 					await bot.say("Too many characters, max 200")
 					return
-
+			#Join Message
 			elif (command.lower() == 'joinmsg'):
 				if (len(" ".join(args)) <= 200):
 					config[ctx.message.server.id]["joinMsgText"] = " ".join(args).replace('\\n', '\n')
-					await bot.say("Join message set to ```"+config[ctx.message.server.id]["joinMsgText"]+"```")
+					await bot.say("Join message set to ```"+config[ctx.message.server.id]["joinMsgText"]+"\n```")
 				else:
 					await bot.say("Too many characters, max 200")
 					return
-
+			#Leave message
 			elif (command.lower() == 'leavemsg'):
 				if (len(" ".join(args)) <= 200):
 					config[ctx.message.server.id]["leaveMsgText"] = " ".join(args).replace('\\n', '\n')
-					await bot.say("Leave message set to ```"+config[ctx.message.server.id]["leaveMsgText"]+"```")
+					await bot.say("Leave message set to ```"+config[ctx.message.server.id]["leaveMsgText"]+"\n```")
 				else:
 					await bot.say("Too many characters, max 200")
 					return
+			#Clear config
 			elif (command.lower() == 'clear'):
 				await bot.say("Are you sure you want to clear this my config for this server? Type `confirm` if you're sure")
 				await bot.wait_for_message(timeout=20, author=ctx.message.author,content='confirm')

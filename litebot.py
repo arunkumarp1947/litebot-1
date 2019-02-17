@@ -178,34 +178,72 @@ async def on_command_error(error, ctx):
 # General help & extra detail
 @bot.command(pass_context=True)
 async def help(ctx, *args):
-	if ("".join(args) == "kick"):
-		await bot.sayd("Kicks an user\n`!kick @user#0000`")
-	elif ("".join(args) == "ban"):
-		await bot.say("Bans an user and deletes their messages from the past 3 days\n`!ban @user#0000`")
-	elif ("".join(args) == "purge"):
-		await bot.say("Mass deletes messages, can also purge a specific user\n`!purge 30 @user#0000`")
-	elif ("".join(args) == "report"):
-		await bot.say("Sends a report to the server\n`!report @user#0000 Stealing the Village gold`")
-	elif ("".join(args) == "config"):
-		await bot.say("Sets a `role`, `swear`, `joinleave`, `joindm`, `joinmsg`, or `leavemsg` to a value, use `;` to seperate values\n `!set joinleave #general`")
-	elif ("".join(args) == "enable"or"".join(args) == "disable"):
-		await bot.say("Enables or disables a command\n `!enable kick`")
-	elif ("".join(args) == "check"):
-		await bot.say("Checks what the server config is set to\n `!check`")
+	#Ping
+	if ("".join(args) == "ping"):
+		embed=discord.Embed(title="Ping",color=0xff8000)
+		embed.add_field(name="Description", value="Displays the latency between discord and litebot", inline=False)
+		embed.add_field(name="Usage", value="`!ping`", inline=False)
+		await bot.say(embed=embed)
+	#Role
 	elif ("".join(args) == "role"):
-		await bot.say("Sets you to a role\n `!role role1`")
+		embed=discord.Embed(title="Role",color=0xff8000)
+		embed.add_field(name="Description", value="Allows users to add or remove themselves from roles easily.", inline=False)
+		embed.add_field(name="Usage", value="`!role <role name>`", inline=False)
+		await bot.say(embed=embed)
+	#Report
+	elif ("".join(args) == "report"):
+		embed=discord.Embed(title="Report",color=0xff8000)
+		embed.add_field(name="Description", value="Use report to report misbehaving users to the server admin. Messages are deleted after you send them so there's no need to worry about them finding out", inline=False)
+		embed.add_field(name="Usage", value="`!report @username#0000 Stealing the village gold`", inline=False)
+		await bot.say(embed=embed)
+	#Kick
+	elif ("".join(args) == "kick"):
+		embed=discord.Embed(title="Kick",color=0xff8000)
+		embed.add_field(name="Description", value="Kicks a user from the server.", inline=False)
+		embed.add_field(name="Usage", value="`!kick @username#0000`", inline=False)
+		await bot.say(embed=embed)
+	#Ban
+	elif ("".join(args) == "ban"):
+		embed=discord.Embed(title="Kick",color=0xff8000)
+		embed.add_field(name="Description", value="Bans a user from the server. You can optionally specify an amount of days of which that user's messages will be deleted.", inline=False)
+		embed.add_field(name="Usage", value="`!ban @username#0000 <Days of messages to delete`", inline=False)
+		await bot.say(embed=embed)
+	#Purge
+	elif ("".join(args) == "purge"):
+		embed=discord.Embed(title="Purge",color=0xff8000)
+		embed.add_field(name="Description", value="Mass deletes up to 100 messages in the current channel. Can optionally specify a single user to delete messages by.", inline=False)
+		embed.add_field(name="Usage", value="`!purge 40 @username#0000`", inline=False)
+		await bot.say(embed=embed)
+	#Config
+	elif ("".join(args) == "config"):
+		embed=discord.Embed(title="Config",color=0xff8000)
+		embed.add_field(name="Description", value="Edits the config for the server. Can configure `joinmsg`, `leavemsg`, `swear`, `joindm` or `roles`.\nTo configure what roles a user can add themselves to using `!role` do `!config roles <role1>;<role2>;<role3>` with `;` seperating the role names", inline=False)
+		embed.add_field(name="Usage", value="`!config <command> <value>`", inline=False)
+		await bot.say(embed=embed)
+	#Enable
+	elif ("".join(args) == "enable"):
+		embed=discord.Embed(title="Enable",color=0xff8000)
+		embed.add_field(name="Description", value="Enables a command. Can enable `!kick`, `!role`, `!report`, `join messages`, `leave messages`, `swear blocking`, `invite blocking`, `link blocking`, and `Join DM`.", inline=False)
+		embed.add_field(name="Usage", value="`!enable <command>`", inline=False)
+		await bot.say(embed=embed)
+	#Disable
+	elif ("".join(args) == "disable"):
+		embed=discord.Embed(title="Disable",color=0xff8000)
+		embed.add_field(name="Description", value="Disables a command. Can disable `!kick`, `!role`, `!report`, `join messages`, `leave messages`, `swear blocking`, `invite blocking`, `link blocking`, and `Join DM`", inline=False)
+		embed.add_field(name="Usage", value="`!disable <command>`", inline=False)
+		await bot.say(embed=embed)
+	#Check
+	elif ("".join(args) == "check"):
+		embed=discord.Embed(title="Check",color=0xff8000)
+		embed.add_field(name="Description", value="Displays the servers config", inline=False)
+		embed.add_field(name="Usage", value="`!check`", inline=False)
+		await bot.say(embed=embed)
 	else:
-		embed = discord.Embed(title="Help")
-		embed.add_field(name="!kick", value="!kick @user#0000", inline=False)
-		embed.add_field(name="!ban", value="!ban @user#0000", inline=False)
-		embed.add_field(name="!purge", value="!purge <NumberOfMessages>", inline=False)
-		embed.add_field(name="!report", value="!report @user#0000 \"Report Content\"", inline=False)
-		embed.add_field(name="!role", value="!role <role name>", inline=False)
-		embed.add_field(name="!check", value="!check", inline=False)
-		if (ctx.message.author.server_permissions.administrator):
-			embed.add_field(name="!enable", value="!enable <command>", inline=False)
-			embed.add_field(name="!disable", value="!disable <command>", inline=False)
-			embed.add_field(name="!config", value="!config <command> <channel>", inline=False)
+		embed=discord.Embed(color=0xff8000)
+		embed.add_field(name="Features", value="`join messages`, `leave messages`, `swear blocking`, `invite blocking`, `link blocking`, `Join DM`, and `self role setting`", inline=False)
+		embed.add_field(name="Regular Commands", value="`!ping`, `!role`, `!report`", inline=False)
+		embed.add_field(name="Moderator Commands", value="`!kick`, `!ban`, `!purge`", inline=False)
+		embed.add_field(name="Administor Commands", value="`!config`, `!enable`, `!disable`, `!check`", inline=False)
 		await bot.say(embed=embed)
 
 # Kick user
@@ -239,8 +277,11 @@ async def kick(ctx, Member: discord.User):
 		print("Error")
 # Ban user
 @bot.command(pass_context=True)
-async def ban(ctx, Member: discord.User):
+async def ban(ctx, Member: discord.User, daysToDelete = 0):
 	try:
+		if (daysToDelete > 7 or daysToDelete < 0):
+			await bot.say("You can only delete messages in days between 0 and 7")
+			return
 		if (await check_config('ban', Member.server, False) == 1):
 			if (Member.id == "227422944123551754" or Member.id == "405829095054770187"):
 				await bot.say("Unable to ban that user")
@@ -249,7 +290,7 @@ async def ban(ctx, Member: discord.User):
 					if (ctx.message.author.server_permissions.ban_members or ctx.message.author.server_permissions.administrator):
 						if (ctx.message.author.top_role.position > Member.top_role.position):
 							try:
-								await bot.ban(Member, delete_message_days=3)
+								await bot.ban(Member, delete_message_days=daysToDelete)
 								await bot.say("Successfully banned **" + Member.name + "**")
 							except discord.HTTPException:
 								await bot.say("Unable to ban **" + Member.name + "**")

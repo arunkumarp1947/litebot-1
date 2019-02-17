@@ -18,16 +18,15 @@ Litebot is a dicord bot for simple moderation. It can delete messages containing
 - ☑ Roles from command
 - ☑ Custom DM to new users
 - ☑ Custom text for join/leave
-- ☐ Better verification of data (Check data on set and on read. possibly add verification to update_data)
-- ☐ Log channel
-- ☐ Optimize code (Less variables and more efficient logic)
-- ☐ New/custom prefix
+- ☐ Add support for custom language (Output only, shouldn't require google translate)
+- ☐ Logging channel
+- ☐ New/server specific prefix
+
 
 ## Most Likely not going to do
 - ☐ Music System
 - ☐ Currency
 - ☐ Rotating MOTD
-- ☐ Custom language
 
 # Docs
 

@@ -15,9 +15,9 @@ bot.remove_command('help')
 @bot.event
 async def on_ready():
 	print('Ready\n')
-	print("		  _				")
-	print("	  .__(.)< (MEOW)	")
-	print("	  \___)				")
+	print("                     ")
+	print("	  .__(.)< (MEOW)    ")
+	print("	  \___)             ")
 	print("~~~~~~~~~~~~~~~~~~~~~")
 	await bot.change_presence(game=discord.Game(name='over the Server | +help',type=3,url="http://jxhub.xyz"))
 	updateConsole()
@@ -593,7 +593,7 @@ async def disable(ctx, command: str):
 @bot.command(pass_context=True)
 async def check(ctx):
 	try:
-		checkString = ""
+		embed=discord.Embed(title="Check",color=0xff8000)
 
 		# Join & Leave Messages
 		joinLeaveCommands = ["Join", "Leave"]
@@ -602,7 +602,7 @@ async def check(ctx):
 				cmdEnabled = "Enabled"
 			else:
 				cmdEnabled = "Disabled"
-			checkString+=(i + " messages are **"+cmdEnabled+"**\n")
+			embed.add_field(name=i + " messages", value=cmdEnabled, inline=False)
 
 		# Kick Ban Purge & Report
 		basicCommands = ["Kick", "Ban", "Purge", "Report", "JoinDm"]
@@ -611,21 +611,21 @@ async def check(ctx):
 				cmdEnabled = "Enabled"
 			else:
 				cmdEnabled = "Disabled"
-			checkString+=(i + " is **"+cmdEnabled+"**\n")
+			embed.add_field(name=i, value=cmdEnabled, inline=False)
 
 		# Invite Blocking
 		if (await check_config('invite', ctx.message.server, False)):
 			cmdEnabled = "Enabled"
 		else:
 			cmdEnabled = "Disabled"
-		checkString+=("Invite blocking is **"+cmdEnabled+"**\n")
+		embed.add_field(name="Invite Blocking", value=cmdEnabled, inline=False)
 
 		# Link Blocking
 		if (await check_config('link', ctx.message.server, False)):
 			cmdEnabled = "Enabled"
 		else:
 			cmdEnabled = "Disabled"
-		checkString+=("Link blocking is **"+cmdEnabled+"**\n")
+		embed.add_field(name="Link Blocking", value=cmdEnabled, inline=False)
 
 		# Swear Blocking
 		if (await check_config('swear', ctx.message.server, False)):
@@ -633,14 +633,15 @@ async def check(ctx):
 		else:
 			cmdEnabled = "Disabled"
 		cmd2Enabled = await check_config('swear', ctx.message.server, True)
-		checkString+=("Swear blocking is **"+cmdEnabled+"** and is set to **"+str(cmd2Enabled)+"**\n")
+		embed.add_field(name="Swear Blocking", value=cmdEnabled+" and is set to "+str(cmd2Enabled), inline=False)
 
 		# Self role setting
 		if (await check_config("role", ctx.message.server, False)):
 			cmdEnabled = "Enabled"
 		else:
 			cmdEnabled = "Disabled"
-		checkString+=("Self role setting is **"+cmdEnabled+"**")
+		embed.add_field(name="Self role setting", value=cmdEnabled, inline=False)
+
 		# Channels for admins
 		if (ctx.message.author.server_permissions.administrator):
 			# Report channel
@@ -651,9 +652,9 @@ async def check(ctx):
 					channelId = channelId.replace('#', '')
 					reportSendLocation = bot.get_channel(channelId)
 					if (reportSendLocation != None):
-						checkString+="\nReport channel is set to "+reportSendLocation.mention
+						embed.add_field(name="Report channel", value=reportSendLocation.mention,inline=False)
 					else:
-						checkString+="\nReport channel is **not setup**"
+						embed.add_field(name="Report channel", value="**Not setup**", inline=False)
 
 				elif "@" in channelId:
 					channelId = channelId.replace('@', '')
@@ -663,36 +664,38 @@ async def check(ctx):
 						reportChannelBroken = True
 
 					if(reportChannelBroken == False):
-						checkString+="\nReport channel is set to **"+reportSendLocation.name+"#"+reportSendLocation.discriminator+"**"
+						embed.add_field(name="Report channel", value=reportSendLocation.name+"#"+reportSendLocation.discriminator,inline=False)
 					else:
-						checkString+="\nReport channel is **not setup**"
+						embed.add_field(name="Report channel", value="**Not setup**", inline=False)
 				else:
-					checkString+="\nReport channel is **not setup**"
+					embed.add_field(name="Report channel", value="**Not setup**", inline=False)
 
 			# Joinleave channel
 			channel = await check_config('joinleaveChannel', ctx.message.server, True)
 			if channel == "":
-				checkString+="\nJoin/Leave message channel is **not setup**"
+				embed.add_field(name="Join/leave Message Channel", value="**Not setup**", inline=False)
 			else:
 				joinleaveChannel = bot.get_channel(channel)
-				checkString+="\nJoin/Leave message channel is set to "+joinleaveChannel.mention
+				embed.add_field(name="Join/leave Message Channel", value=joinleaveChannel.mention, inline=False)
+				
 			# Join Leave Text
 			joinMsgText = await check_config('joinMsgText', ctx.message.server, True)
 			if (joinMsgText == ""):
 				joinMsgText = "Welcome {user}"
-			checkString+="\nJoin messages text is set to: \n```"+joinMsgText+"```"
+			embed.add_field(name="Join Message Text", value='`'+joinMsgText+'`', inline=False)
 
 			leaveMsgText = await check_config('leaveMsgText', ctx.message.server, True)
 			if (leaveMsgText == ""):
 				leaveMsgText = "{user} has left the server"
-			checkString+="\nLeave messages text is set to: \n```"+leaveMsgText+"```"
+			embed.add_field(name="Leave Message Text", value='`'+leaveMsgText+'`', inline=False)
+			
 			# Joindm text
 			joinDmText = (await check_config('joinDmText', ctx.message.server, True))
 			if joinDmText == "":
-				checkString+="\nJoin Dm message text is **not set up**"
+				embed.add_field(name="Join DM Text", value='**Not setup**', inline=False)
 			else:
-				checkString+="\nJoin Dm message text is set to: \n```"+joinDmText+"```"
-		await bot.say(checkString)
+				embed.add_field(name="Join DM Text", value='`'+joinDmText+'`', inline=False)
+		await bot.say(embed=embed)
 
 	except:
 		await bot.say("Error getting server settings")

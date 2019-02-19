@@ -18,10 +18,10 @@ Litebot is a dicord bot for simple moderation. It can delete messages containing
 - ☑ Roles from command
 - ☑ Custom DM to new users
 - ☑ Custom text for join/leave
+- ☐ Convert !check into an embed
 - ☐ Add support for custom language (Output only, shouldn't require google translate)
 - ☐ Logging channel
 - ☐ New/server specific prefix
-
 
 ## Most Likely not going to do
 - ☐ Music System

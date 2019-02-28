@@ -481,9 +481,9 @@ async def enable(ctx, command: str):
 			elif (command.lower() == "link"):
 				if (config[ctx.message.server.id]["enabled"]["link"]==False):
 					config[ctx.message.server.id]["enabled"]["link"] = True
-					await bot.say("Dm on join has been enabled")
+					await bot.say("Link blocking has been enabled")
 				else:
-					await bot.say("Dm on join was already enabled")
+					await bot.say("Link blocking was already enabled")
 			else:
 				await bot.say("Invalid argument. Do `+help enable` for more info")
 		else:
@@ -576,9 +576,9 @@ async def disable(ctx, command: str):
 			elif (command.lower() == "link"):
 				if (config[ctx.message.server.id]["enabled"]["link"]==True):
 					config[ctx.message.server.id]["enabled"]["link"] = False
-					await bot.say("Dm on join has been disabled")
+					await bot.say("Link blocking has been disabled")
 				else:
-					await bot.say("Dm on join was already disabled")
+					await bot.say("Link blocking was already disabled")
 			else:
 				await bot.say("Invalid argument. Do `+help disable` for more info")
 		else:

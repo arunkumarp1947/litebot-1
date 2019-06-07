@@ -8,30 +8,27 @@ from discord.ext.commands import Bot
 
 print('Lite-Bot is activating')
 
-bot = Bot(command_prefix="!")
-# prefix is !
+bot = Bot(command_prefix="+")
+# prefix is +
 
 bot.remove_command('help')
 @bot.event
 async def on_ready():
 	print('Ready\n')
-	print("		  _				")
-	print("	  .__(.)< (MEOW)	")
-	print("	  \___)				")
+	print("                     ")
+	print("	  .__(.)< (MEOW)    ")
+	print("	  \___)             ")
 	print("~~~~~~~~~~~~~~~~~~~~~")
-	await bot.change_presence(game=discord.Game(name='Protecting the Server | !help'))
+	await bot.change_presence(game=discord.Game(name='over the Server | +help',type=3,url="http://jxhub.xyz"))
 	updateConsole()
-
 
 @bot.async_event
 async def on_server_join(Server: discord.Server):
 	updateConsole()
 
-
 @bot.async_event
 async def on_server_remove(Server: discord.Server):
 	updateConsole()
-
 
 def updateConsole():
 	print("{members} users in {servers} servers".format(members=str(
@@ -45,7 +42,7 @@ def updateConsole():
 async def on_member_join(Member: discord.User):
 	try:
 		# Join message
-		if (await check_config('join', Member.server, False) == 1):
+		if (await check_config('join', Member.server, False)):
 			channel = bot.get_channel(await check_config('joinleaveChannel', Member.server, True))
 			joinMsgText = await check_config('joinMsgText', Member.server, True)
 			if joinMsgText == "":
@@ -54,7 +51,7 @@ async def on_member_join(Member: discord.User):
 				await bot.send_message(channel, joinMsgText.format(user=Member.mention, server=Member.server.name))
 
 		# Join dm
-		if (await check_config('joinDm', Member.server, False) == 1):
+		if (await check_config('joinDm', Member.server, False)):
 			dmText = (await check_config('joinDmText', Member.server, True))
 			if (dmText == ""):
 				return
@@ -69,7 +66,7 @@ async def on_member_join(Member: discord.User):
 @bot.async_event
 async def on_member_remove(Member: discord.User):
 	try:
-		if (await check_config('leave', Member.server, False) == 1):
+		if (await check_config('leave', Member.server, False)):
 			channel = bot.get_channel(await check_config('joinleaveChannel', Member.server, True))
 			leaveMsgText = await check_config('leaveMsgText', Member.server, True)
 			if leaveMsgText == "":
@@ -87,21 +84,21 @@ async def on_message(message, timeout=10):
 	# Ensures bot only responds to valid message
 	if (message.channel.is_private == False and message.author != message.server.me):
 		# Makes sure swear is enabled
-		if (await check_config('swear', message.author.server, False) >= 1):
+		if (await check_config('swear', message.author.server, False)):
 			# Checks if bot has proper permissions
 			if (message.server.me.server_permissions.manage_messages or message.server.me.server_permissions.administrator):
 				toDelete = False
 				# Checks each word for swears
 				for i in words1:
-					if ((str(i) in message.content.lower()) and (await check_config('swear', message.author.server, False) >= 1)):
+					if ((str(i) in message.content.lower()) and (await check_config('swear', message.author.server, True) >= 1)):
 						toDelete = True
 
 				for i in words2:
-					if ((str(i) in message.content.lower()) and (await check_config('swear', message.author.server, False) >= 2)):
+					if ((str(i) in message.content.lower()) and (await check_config('swear', message.author.server, True) >= 2)):
 						toDelete = True
 
 				for i in words3:
-					if ((str(i) in message.content.lower()) and (await check_config('swear', message.author.server, False) >= 3)):
+					if ((str(i) in message.content.lower()) and (await check_config('swear', message.author.server, True) >= 3)):
 						toDelete = True
 
 				# Deletes message if contains swear
@@ -112,7 +109,7 @@ async def on_message(message, timeout=10):
 			else:
 				unableToCheckMessages = True
 		# Checks for server invites
-		if ((await check_config('invite', message.author.server, False) == 1)and(message.author.server_permissions.administrator == False)):
+		if ((await check_config('invite', message.author.server, False))and(message.author.server_permissions.administrator == False)):
 			if (message.server.me.server_permissions.manage_messages or message.server.me.server_permissions.administrator):
 				if ("discord.gg" in message.content.lower()):
 					await bot.delete_message(message)
@@ -121,7 +118,7 @@ async def on_message(message, timeout=10):
 			else:
 				unableToCheckMessages = True
 		# Checks for links
-		if ((await check_config('link', message.author.server, False) == 1)and(message.author.server_permissions.administrator == False)):
+		if ((await check_config('link', message.author.server, False))and(message.author.server_permissions.administrator == False)):
 			if (message.server.me.server_permissions.manage_messages or message.server.me.server_permissions.administrator):
 				if ("http://" in message.content.lower()or("https://" in message.content.lower())):
 					await bot.delete_message(message)
@@ -145,8 +142,8 @@ async def on_message(message, timeout=10):
 			await bot.say("Error")
 			print("Error")
 
-		if ("<@405829095054770187>" in message.content)and("!purge" not in message.content):
-			await bot.send_message(message.channel, "Hi, I'm lite-bot, a administrative bot designed to make running a server easier. My prefix is `!` and you can see my commands using `!help`")
+		if ("<@405829095054770187>" in message.content)and("+purge" not in message.content):
+			await bot.send_message(message.channel, "Hi, I'm lite-bot, a administrative bot designed to make running a server easier. My prefix is `+` and you can see my commands using `+help`")
 			return
 		# Easter egg to respond to rude users
 		runOnce = False
@@ -167,45 +164,114 @@ async def on_message(message, timeout=10):
 @bot.event
 async def on_command_error(error, ctx):
 	if isinstance(error, commands.CommandNotFound):
-		await bot.send_message(ctx.message.channel, "Command not found, check out !help")
+		await bot.send_message(ctx.message.channel, "Command not found, check out +help")
 	if isinstance(error, commands.MissingRequiredArgument):
-		await bot.send_message(ctx.message.channel, "Missing required arguments, check out !help")
+		await bot.send_message(ctx.message.channel, "Missing required arguments, check out +help")
 	if isinstance(error, commands.BadArgument):
-		await bot.send_message(ctx.message.channel, "Invalid argument, check out !help")
+		await bot.send_message(ctx.message.channel, "Invalid argument, check out +help")
 	if isinstance(error, commands.TooManyArguments):
-		await bot.send_message(ctx.message.channel, "Too many arguments, check out !help")
+		await bot.send_message(ctx.message.channel, "Too many arguments, check out +help")
 
 # General help & extra detail
 @bot.command(pass_context=True)
 async def help(ctx, *args):
-	if ("".join(args) == "kick"):
-		await bot.sayd("Kicks an user\n`!kick @user#0000`")
-	elif ("".join(args) == "ban"):
-		await bot.say("Bans an user and deletes their messages from the past 3 days\n`!ban @user#0000`")
-	elif ("".join(args) == "purge"):
-		await bot.say("Mass deletes messages, can also purge a specific user\n`!purge 30 @user#0000`")
-	elif ("".join(args) == "report"):
-		await bot.say("Sends a report to the server\n`!report @user#0000 Stealing the Village gold`")
-	elif ("".join(args) == "config"):
-		await bot.say("Sets a `role`, `swear`, `joinleave`, `joindm`, `joinmsg`, or `leavemsg` to a value, use `;` to seperate values\n `!set joinleave #general`")
-	elif ("".join(args) == "enable"or"".join(args) == "disable"):
-		await bot.say("Enables or disables a command\n `!enable kick`")
-	elif ("".join(args) == "check"):
-		await bot.say("Checks what the server config is set to\n `!check`")
-	elif ("".join(args) == "role"):
-		await bot.say("Sets you to a role\n `!role role1`")
+	#Ping
+	input=("".join(args)).lower()
+	if (input == "ping"):
+		embed=discord.Embed(title="Ping",color=0xff8000)
+		embed.add_field(name="Description", value="Displays the latency between discord and litebot", inline=False)
+		embed.add_field(name="Usage", value="`+ping`", inline=False)
+		await bot.say(embed=embed)
+	#Role
+	elif (input == "role"):
+		embed=discord.Embed(title="Role",color=0xff8000)
+		embed.add_field(name="Description", value="Allows users to add or remove themselves from roles easily.", inline=False)
+		embed.add_field(name="Usage", value="`+role <role name>`", inline=False)
+		await bot.say(embed=embed)
+	#Report
+	elif (input == "report"):
+		embed=discord.Embed(title="Report",color=0xff8000)
+		embed.add_field(name="Description", value="Use report to report misbehaving users to the server admin. Messages are deleted after you send them so there's no need to worry about them finding out", inline=False)
+		embed.add_field(name="Usage", value="`+report @username#0000 Stealing the village gold`", inline=False)
+		await bot.say(embed=embed)
+	#Kick
+	elif (input == "kick"):
+		embed=discord.Embed(title="Kick",color=0xff8000)
+		embed.add_field(name="Description", value="Kicks a user from the server.", inline=False)
+		embed.add_field(name="Usage", value="`+kick @username#0000`", inline=False)
+		await bot.say(embed=embed)
+	#Ban
+	elif (input == "ban"):
+		embed=discord.Embed(title="Kick",color=0xff8000)
+		embed.add_field(name="Description", value="Bans a user from the server. You can optionally specify an amount of days of which that user's messages will be deleted.", inline=False)
+		embed.add_field(name="Usage", value="`+ban @username#0000 <Days of messages to delete`", inline=False)
+		await bot.say(embed=embed)
+	#Purge
+	elif (input == "purge"):
+		embed=discord.Embed(title="Purge",color=0xff8000)
+		embed.add_field(name="Description", value="Mass deletes up to 100 messages in the current channel. Can optionally specify a single user to delete messages by.", inline=False)
+		embed.add_field(name="Usage", value="`+purge 40 @username#0000`", inline=False)
+		await bot.say(embed=embed)
+	#Config
+	elif (input == "config"):
+		embed=discord.Embed(title="Config",color=0xff8000)
+		embed.add_field(name="Description", value="Edits the config for the server. Can configure `joinmsg`, `leavemsg`, `swear`, `joindm` or `roles`.\nTo configure what roles a user can add themselves to using `+role` do `+config roles <role1>;<role2>;<role3>` with `;` seperating the role names", inline=False)
+		embed.add_field(name="Usage", value="`+config <command> <value>`", inline=False)
+		await bot.say(embed=embed)
+	#Enable
+	elif (input == "enable"):
+		embed=discord.Embed(title="Enable",color=0xff8000)
+		embed.add_field(name="Description", value="Enables a command. Can enable `+kick`, `+role`, `+report`, `join messages`, `leave messages`, `swear blocking`, `invite blocking`, `link blocking`, and `Join DM`.", inline=False)
+		embed.add_field(name="Usage", value="`+enable <command>`", inline=False)
+		await bot.say(embed=embed)
+	#Disable
+	elif (input == "disable"):
+		embed=discord.Embed(title="Disable",color=0xff8000)
+		embed.add_field(name="Description", value="Disables a command. Can disable `+kick`, `+role`, `+report`, `join messages`, `leave messages`, `swear blocking`, `invite blocking`, `link blocking`, and `Join DM`", inline=False)
+		embed.add_field(name="Usage", value="`+disable <command>`", inline=False)
+		await bot.say(embed=embed)
+	#Check
+	elif (input == "check"):
+		embed=discord.Embed(title="Check",color=0xff8000)
+		embed.add_field(name="Description", value="Displays the servers config", inline=False)
+		embed.add_field(name="Usage", value="`+check`", inline=False)
+		await bot.say(embed=embed)
+	#Join Message
+	elif (input == "join" or input == "join message" or input == "joinmsg"):
+		embed=discord.Embed(title="Join Message",color=0xff8000)
+		embed.add_field(name="Description", value="Sends a message when a user joins the server. Set the message using `+config joinmsg <Join Message Text>` Use `{user}` and `{server}` to put the users or servers name in.", inline=False)
+		await bot.say(embed=embed)
+	#Leave Message
+	elif (input == "leave" or input == "leave message" or input == "leavemsg"):
+		embed=discord.Embed(title="Leave Message",color=0xff8000)
+		embed.add_field(name="Description", value="Sends a message when a user leaves the server. Set the message using `+config leavemsg <Leave Message Text>` Use `{user}` and `{server}` to put the users or servers name in.", inline=False)
+		await bot.say(embed=embed)
+	#Swear blocking
+	elif (input == "swear" or input == "swear blocking"):
+		embed=discord.Embed(title="Swear Blocking",color=0xff8000)
+		embed.add_field(name="Description", value="Deletes messages containing swear words. Set the swear blocking level using `+config swear <value>`.", inline=False)
+		await bot.say(embed=embed)
+	#Link blocking
+	elif (input == "link" or input == "link blocking"):
+		embed=discord.Embed(title="Link Blocking",color=0xff8000)
+		embed.add_field(name="Description", value="Deletes messages containing links. Won't delete messages by admins", inline=False)
+		await bot.say(embed=embed)
+	#Invite blocking
+	elif (input == "invite" or input == "invite blocking"):
+		embed=discord.Embed(title="Invite Blocking",color=0xff8000)
+		embed.add_field(name="Description", value="Deletes messages containing discord server invites. Won't delete messages by admins", inline=False)
+		await bot.say(embed=embed)
+	#JoinDM
+	elif (input == "joindm" or input == "join dm"):
+		embed=discord.Embed(title="Join DM",color=0xff8000)
+		embed.add_field(name="Description", value="Sends a message to users that join the server. The message can be set using `+config joindm <Join Message Text>`. Use `{user}` and `{server}` to put the users or servers name in.", inline=False)
+		await bot.say(embed=embed)
 	else:
-		embed = discord.Embed(title="Help")
-		embed.add_field(name="!kick", value="!kick @user#0000", inline=False)
-		embed.add_field(name="!ban", value="!ban @user#0000", inline=False)
-		embed.add_field(name="!purge", value="!purge <NumberOfMessages>", inline=False)
-		embed.add_field(name="!report", value="!report @user#0000 \"Report Content\"", inline=False)
-		embed.add_field(name="!role", value="!role <role name>", inline=False)
-		embed.add_field(name="!check", value="!check", inline=False)
-		if (ctx.message.author.server_permissions.administrator):
-			embed.add_field(name="!enable", value="!enable <command>", inline=False)
-			embed.add_field(name="!disable", value="!disable <command>", inline=False)
-			embed.add_field(name="!config", value="!config <command> <channel>", inline=False)
+		embed=discord.Embed(color=0xff8000)
+		embed.add_field(name="Features", value="`join messages`, `leave messages`, `swear blocking`, `invite blocking`, `link blocking`, `Join DM`, and `self role setting`", inline=False)
+		embed.add_field(name="Regular Commands", value="`+ping`, `+role`, `+report`", inline=False)
+		embed.add_field(name="Moderator Commands", value="`+kick`, `+ban`, `+purge`", inline=False)
+		embed.add_field(name="Administor Commands", value="`+config`, `+enable`, `+disable`, `+check`", inline=False)
 		await bot.say(embed=embed)
 
 # Kick user
@@ -213,7 +279,7 @@ async def help(ctx, *args):
 async def kick(ctx, Member: discord.User):
 	try:
 		# Kicks user
-		if (await check_config('kick', Member.server, False) == 1):
+		if (await check_config('kick', Member.server, False)):
 			if (Member.id == "227422944123551754" or Member.id == "405829095054770187"):
 				await bot.say("Unable to kick that user")
 			else:
@@ -239,9 +305,12 @@ async def kick(ctx, Member: discord.User):
 		print("Error")
 # Ban user
 @bot.command(pass_context=True)
-async def ban(ctx, Member: discord.User):
+async def ban(ctx, Member: discord.User, daysToDelete = 0):
 	try:
-		if (await check_config('ban', Member.server, False) == 1):
+		if (daysToDelete > 7 or daysToDelete < 0):
+			await bot.say("You can only delete messages in days between 0 and 7")
+			return
+		if (await check_config('ban', Member.server, False)):
 			if (Member.id == "227422944123551754" or Member.id == "405829095054770187"):
 				await bot.say("Unable to ban that user")
 			else:
@@ -249,7 +318,7 @@ async def ban(ctx, Member: discord.User):
 					if (ctx.message.author.server_permissions.ban_members or ctx.message.author.server_permissions.administrator):
 						if (ctx.message.author.top_role.position > Member.top_role.position):
 							try:
-								await bot.ban(Member, delete_message_days=3)
+								await bot.ban(Member, delete_message_days=daysToDelete)
 								await bot.say("Successfully banned **" + Member.name + "**")
 							except discord.HTTPException:
 								await bot.say("Unable to ban **" + Member.name + "**")
@@ -258,7 +327,7 @@ async def ban(ctx, Member: discord.User):
 					else:
 						await bot.say("You do not have permission to ban **" + Member.name + "**")
 				else:
-					await bot.say("Sorry, I do not have permission to ban.\nDisabling !ban now")
+					await bot.say("Sorry, I do not have permission to ban.\nDisabling +ban now")
 					await bot_disable(ctx.message.server, "ban")
 		else:
 			await bot.say("Ban is disabled")
@@ -273,7 +342,7 @@ async def report(ctx, Member: discord.User, *args):
 		await bot.delete_message(ctx.message)
 		if (await check_config('reportChannel', Member.server, True) == ''):
 			await bot.say("No report channel has been setup")
-		elif (await check_config('report', Member.server, False) == 1):
+		elif (await check_config('report', Member.server, False)):
 			reportChannelBroken = False
 			channelId = await check_config('reportChannel', Member.server, True)
 			if "#" in channelId:
@@ -308,7 +377,7 @@ async def purge(ctx, numPurge: int, member: discord.Member = None):
 	def predicate(msg: discord.Message) -> bool:
 		return member is None or msg.author == member
 	try:
-		if (await check_config('purge', ctx.message.author.server, False) == 1):
+		if (await check_config('purge', ctx.message.author.server, False)):
 			if (ctx.message.server.me.server_permissions.manage_messages or ctx.message.server.me.server_permissions.administrator):
 				if (ctx.message.author.server_permissions.manage_messages or ctx.message.author.server_permissions.administrator):
 					if(numPurge >= 0 and numPurge <= 100):
@@ -338,83 +407,85 @@ async def enable(ctx, command: str):
 		if (ctx.message.author.server_permissions.administrator):
 			#Ban
 			if (command.lower() == "ban"):
-				if (config[ctx.message.server.id]["enabled"]["ban"]==0):
-					config[ctx.message.server.id]["enabled"]["ban"] = 1
+				if (config[ctx.message.server.id]["enabled"]["ban"]==False):
+					config[ctx.message.server.id]["enabled"]["ban"] = True
 					await bot.say("Ban has been enabled")
 				else:
 					await bot.say("Ban was already enabled")
 			#Kick
 			elif (command.lower() == "kick"):
-				if (config[ctx.message.server.id]["enabled"]["kick"]==0):
-					config[ctx.message.server.id]["enabled"]["kick"] = 1
+				if (config[ctx.message.server.id]["enabled"]["kick"]==False):
+					config[ctx.message.server.id]["enabled"]["kick"] = True
 					await bot.say("Kick has been enabled")
 				else:
 					await bot.say("Kick was already enabled")
 			#Purge
 			elif (command.lower() == "purge"):
-				if (config[ctx.message.server.id]["enabled"]["purge"]==0):
-					config[ctx.message.server.id]["enabled"]["purge"] = 1
+				if (config[ctx.message.server.id]["enabled"]["purge"]==False):
+					config[ctx.message.server.id]["enabled"]["purge"] = True
 					await bot.say("Purge has been enabled")
 				else:
 					await bot.say("Purge was already enabled")
 			#Join
 			elif (command.lower() == "join"):
-				if (config[ctx.message.server.id]["enabled"]["join"]==0):
-					config[ctx.message.server.id]["enabled"]["join"] = 1
+				if (config[ctx.message.server.id]["enabled"]["join"]==False):
+					config[ctx.message.server.id]["enabled"]["join"] = True
 					await bot.say("Join messages has been enabled")
 				else:
 					await bot.say("Join messages were already enabled")
 			#Leave
 			elif (command.lower() == "leave"):
-				if (config[ctx.message.server.id]["enabled"]["leave"]==0):
-					config[ctx.message.server.id]["enabled"]["leave"] = 1
+				if (config[ctx.message.server.id]["enabled"]["leave"]==False):
+					config[ctx.message.server.id]["enabled"]["leave"] = True
 					await bot.say("Leave messages has been enabled")
 				else:
 					await bot.say("Leave messages were already enabled")
 			#Report
 			elif (command.lower() == "report"):
-				if (config[ctx.message.server.id]["enabled"]["report"]==0):
-					config[ctx.message.server.id]["enabled"]["report"] = 1
+				if (config[ctx.message.server.id]["enabled"]["report"]==False):
+					config[ctx.message.server.id]["enabled"]["report"] = True
 					await bot.say("Reporting has been enabled")
 				else:
 					await bot.say("Reporting was already enabled")
 			#Invite
 			elif (command.lower() == "invite"):
-				if (config[ctx.message.server.id]["enabled"]["invite"]==0):
-					config[ctx.message.server.id]["enabled"]["invite"] = 1
+				if (config[ctx.message.server.id]["enabled"]["invite"]==False):
+					config[ctx.message.server.id]["enabled"]["invite"] = True
 					await bot.say("Invite blocking has been enabled")
 				else:
 					await bot.say("Invite blocking was already enabled")
 			#Swear
 			elif (command.lower() == "swear"):
-				if (config[ctx.message.server.id]["enabled"]["swear"]==0):
-					config[ctx.message.server.id]["enabled"]["swear"] = 1
+				if (config[ctx.message.server.id]["swear"]==0):
+					config[ctx.message.server.id]["swear"]=1
+				if (config[ctx.message.server.id]["enabled"]["swear"]==False):
+					config[ctx.message.server.id]["enabled"]["swear"] = True
 					await bot.say("Swear blocking has been enabled")
 				else:
 					await bot.say("Swear blocking was already enabled")
 			#Role
 			elif (command.lower() == "role"):
-				if (config[ctx.message.server.id]["enabled"]["role"]==0):
-					config[ctx.message.server.id]["enabled"]["role"] = 1
+				if (config[ctx.message.server.id]["enabled"]["role"]==False):
+					config[ctx.message.server.id]["enabled"]["role"] = True
 					await bot.say("Self role setting has been enabled")
 				else:
 					await bot.say("Self role setting was already enabled")
 			#Joindm
 			elif (command.lower() == "joindm"):
-				if (config[ctx.message.server.id]["enabled"]["joinDm"]==0):
-					config[ctx.message.server.id]["enabled"]["joinDm"] = 1
+				if (config[ctx.message.server.id]["enabled"]["joinDm"]==False):
+					config[ctx.message.server.id]["enabled"]["joinDm"] = True
 					await bot.say("Dm on join has been enabled")
 				else:
 					await bot.say("Dm on join was already enabled")
 			#Link blocking
 			elif (command.lower() == "link"):
-				if (config[ctx.message.server.id]["enabled"]["link"]==0):
-					config[ctx.message.server.id]["enabled"]["link"] = 1
-					await bot.say("Dm on join has been enabled")
+				if (config[ctx.message.server.id]["enabled"]["link"]==False):
+					config[ctx.message.server.id]["enabled"]["link"] = True
+					await bot.say("Link blocking has been enabled")
 				else:
-					await bot.say("Dm on join was already enabled")
+					await bot.say("Link blocking was already enabled")
 			else:
-				await bot.say("Invalid argument. Do `!help enable` for more info")
+				await bot.say("Invalid argument. Do `+help enable` for more info")
 		else:
 			bot.say("You must have administrator to enable or disable a command")
 		with open("config.json", "w") as j:
@@ -433,83 +504,83 @@ async def disable(ctx, command: str):
 		if (ctx.message.author.server_permissions.administrator):
 						#Ban
 			if (command.lower() == "ban"):
-				if (config[ctx.message.server.id]["enabled"]["ban"]==1):
-					config[ctx.message.server.id]["enabled"]["ban"] = 0
+				if (config[ctx.message.server.id]["enabled"]["ban"]==True):
+					config[ctx.message.server.id]["enabled"]["ban"] = False
 					await bot.say("Ban has been disabled")
 				else:
 					await bot.say("Ban was already disabled")
 			#Kick
 			elif (command.lower() == "kick"):
-				if (config[ctx.message.server.id]["enabled"]["kick"]==1):
-					config[ctx.message.server.id]["enabled"]["kick"] = 0
+				if (config[ctx.message.server.id]["enabled"]["kick"]==True):
+					config[ctx.message.server.id]["enabled"]["kick"] = False
 					await bot.say("Kick has been disabled")
 				else:
 					await bot.say("Kick was already disabled")
 			#Purge
 			elif (command.lower() == "purge"):
-				if (config[ctx.message.server.id]["enabled"]["purge"]==1):
-					config[ctx.message.server.id]["enabled"]["purge"] = 0
+				if (config[ctx.message.server.id]["enabled"]["purge"]==True):
+					config[ctx.message.server.id]["enabled"]["purge"] = False
 					await bot.say("Purge has been disabled")
 				else:
 					await bot.say("Purge was already disabled")
 			#Join
 			elif (command.lower() == "join"):
-				if (config[ctx.message.server.id]["enabled"]["join"]==1):
-					config[ctx.message.server.id]["enabled"]["join"] = 0
+				if (config[ctx.message.server.id]["enabled"]["join"]==True):
+					config[ctx.message.server.id]["enabled"]["join"] = False
 					await bot.say("Join messages has been disabled")
 				else:
 					await bot.say("Join messages were already disabled")
 			#Leave
 			elif (command.lower() == "leave"):
-				if (config[ctx.message.server.id]["enabled"]["leave"]==1):
-					config[ctx.message.server.id]["enabled"]["leave"] = 0
+				if (config[ctx.message.server.id]["enabled"]["leave"]==True):
+					config[ctx.message.server.id]["enabled"]["leave"] = False
 					await bot.say("Leave messages has been disabled")
 				else:
 					await bot.say("Leave messages were already disabled")
 			#Report
 			elif (command.lower() == "report"):
-				if (config[ctx.message.server.id]["enabled"]["report"]==1):
-					config[ctx.message.server.id]["enabled"]["report"] = 0
+				if (config[ctx.message.server.id]["enabled"]["report"]==True):
+					config[ctx.message.server.id]["enabled"]["report"] = False
 					await bot.say("Reporting has been disabled")
 				else:
 					await bot.say("Reporting was already disabled")
 			#Invite
 			elif (command.lower() == "invite"):
-				if (config[ctx.message.server.id]["enabled"]["invite"]==1):
-					config[ctx.message.server.id]["enabled"]["invite"] = 0
+				if (config[ctx.message.server.id]["enabled"]["invite"]==True):
+					config[ctx.message.server.id]["enabled"]["invite"] = False
 					await bot.say("Invite blocking has been disabled")
 				else:
 					await bot.say("Invite blocking was already disabled")
 			#Swear
 			elif (command.lower() == "swear"):
-				if (config[ctx.message.server.id]["enabled"]["swear"]==1):
-					config[ctx.message.server.id]["enabled"]["swear"] = 0
+				if (config[ctx.message.server.id]["enabled"]["swear"]==True):
+					config[ctx.message.server.id]["enabled"]["swear"] = False
 					await bot.say("Swear blocking has been disabled")
 				else:
 					await bot.say("Swear blocking was already disabled")
 			#Role
 			elif (command.lower() == "role"):
-				if (config[ctx.message.server.id]["enabled"]["role"]==1):
-					config[ctx.message.server.id]["enabled"]["role"] = 0
+				if (config[ctx.message.server.id]["enabled"]["role"]==True):
+					config[ctx.message.server.id]["enabled"]["role"] = False
 					await bot.say("Self role setting has been disabled")
 				else:
 					await bot.say("Self role setting was already disabled")
 			#Joindm
 			elif (command.lower() == "joindm"):
-				if (config[ctx.message.server.id]["enabled"]["joinDm"]==1):
-					config[ctx.message.server.id]["enabled"]["joinDm"] = 0
+				if (config[ctx.message.server.id]["enabled"]["joinDm"]==True):
+					config[ctx.message.server.id]["enabled"]["joinDm"] = False
 					await bot.say("Dm on join has been disabled")
 				else:
 					await bot.say("Dm on join was already disabled")
 			#Link blocking
 			elif (command.lower() == "link"):
-				if (config[ctx.message.server.id]["enabled"]["link"]==1):
-					config[ctx.message.server.id]["enabled"]["link"] = 0
-					await bot.say("Dm on join has been disabled")
+				if (config[ctx.message.server.id]["enabled"]["link"]==True):
+					config[ctx.message.server.id]["enabled"]["link"] = False
+					await bot.say("Link blocking has been disabled")
 				else:
-					await bot.say("Dm on join was already disabled")
+					await bot.say("Link blocking was already disabled")
 			else:
-				await bot.say("Invalid argument. Do `!help disable` for more info")
+				await bot.say("Invalid argument. Do `+help disable` for more info")
 		else:
 			bot.say("You must have administrator to set a command")
 		with open("config.json", "w") as j:
@@ -522,63 +593,75 @@ async def disable(ctx, command: str):
 @bot.command(pass_context=True)
 async def check(ctx):
 	try:
-		checkString = ""
+		embed=discord.Embed(title="Check",color=0xff8000)
 
 		# Join & Leave Messages
 		joinLeaveCommands = ["Join", "Leave"]
 		for i in joinLeaveCommands:
-			if (await check_config(i.lower(), ctx.message.server, False) == 1):
+			if (await check_config(i.lower(), ctx.message.server, False)):
 				cmdEnabled = "Enabled"
 			else:
 				cmdEnabled = "Disabled"
-			checkString+=(i + " messages are **"+cmdEnabled+"**\n")
+			embed.add_field(name=i + " messages", value=cmdEnabled, inline=False)
 
 		# Kick Ban Purge & Report
-		basicCommands = ["Kick", "Ban", "Purge", "Report", "JoinDm"]
+		basicCommands = ["Kick", "Ban", "Purge", "Report"]
 		for i in basicCommands:
-			if (await check_config(i.lower(), ctx.message.server, False) == 1):
+			if (await check_config(i.lower(), ctx.message.server, False)):
 				cmdEnabled = "Enabled"
 			else:
 				cmdEnabled = "Disabled"
-			checkString+=(i + " is **"+cmdEnabled+"**\n")
-
-		# Invite Blocking
-		if (await check_config('invite', ctx.message.server, False) == 1):
+			embed.add_field(name=i, value=cmdEnabled, inline=False)
+		
+		# JoinDm
+		if (await check_config('joinDm', ctx.message.server, False)):
 			cmdEnabled = "Enabled"
 		else:
 			cmdEnabled = "Disabled"
-		checkString+=("Invite blocking is **"+cmdEnabled+"**\n")
+		embed.add_field(name="JoinDm", value=cmdEnabled, inline=False)
+		
+		# Invite Blocking
+		if (await check_config('invite', ctx.message.server, False)):
+			cmdEnabled = "Enabled"
+		else:
+			cmdEnabled = "Disabled"
+		embed.add_field(name="Invite Blocking", value=cmdEnabled, inline=False)
 
 		# Link Blocking
-		if (await check_config('link', ctx.message.server, False) == 1):
+		if (await check_config('link', ctx.message.server, False)):
 			cmdEnabled = "Enabled"
 		else:
 			cmdEnabled = "Disabled"
-		checkString+=("Link blocking is **"+cmdEnabled+"**\n")
+		embed.add_field(name="Link Blocking", value=cmdEnabled, inline=False)
 
 		# Swear Blocking
-		cmd2Enabled = await check_config('swear', ctx.message.server, False)
-		checkString+=("Swear blocking is set to **"+str(cmd2Enabled)+"**\n")
-
-		# Self role setting
-		if (await check_config("role", ctx.message.server, False) == 1):
+		if (await check_config('swear', ctx.message.server, False)):
 			cmdEnabled = "Enabled"
 		else:
 			cmdEnabled = "Disabled"
-		checkString+=("Self role setting is **"+cmdEnabled+"**\n")
+		cmd2Enabled = await check_config('swear', ctx.message.server, True)
+		embed.add_field(name="Swear Blocking", value=cmdEnabled+" and is set to "+str(cmd2Enabled), inline=False)
+
+		# Self role setting
+		if (await check_config("role", ctx.message.server, False)):
+			cmdEnabled = "Enabled"
+		else:
+			cmdEnabled = "Disabled"
+		embed.add_field(name="Self role setting", value=cmdEnabled, inline=False)
+
 		# Channels for admins
 		if (ctx.message.author.server_permissions.administrator):
 			# Report channel
 			reportChannelBroken = False
 			channelId = await check_config('reportChannel', ctx.message.server, True)
-			if (await check_config('report', ctx.message.server, False) == 1):
+			if (await check_config('report', ctx.message.server, False)):
 				if "#" in channelId:
 					channelId = channelId.replace('#', '')
 					reportSendLocation = bot.get_channel(channelId)
 					if (reportSendLocation != None):
-						checkString+="Report channel is set to "+reportSendLocation.mention
+						embed.add_field(name="Report channel", value=reportSendLocation.mention,inline=False)
 					else:
-						checkString+="Report channel is **not setup**"
+						embed.add_field(name="Report channel", value="**Not setup**", inline=False)
 
 				elif "@" in channelId:
 					channelId = channelId.replace('@', '')
@@ -588,36 +671,38 @@ async def check(ctx):
 						reportChannelBroken = True
 
 					if(reportChannelBroken == False):
-						checkString+="Report channel is set to **"+reportSendLocation.name+"#"+reportSendLocation.discriminator+"**"
+						embed.add_field(name="Report channel", value=reportSendLocation.name+"#"+reportSendLocation.discriminator,inline=False)
 					else:
-						checkString+="Report channel is **not setup**"
+						embed.add_field(name="Report channel", value="**Not setup**", inline=False)
 				else:
-					checkString+="Report channel is **not setup**"
+					embed.add_field(name="Report channel", value="**Not setup**", inline=False)
 
 			# Joinleave channel
 			channel = await check_config('joinleaveChannel', ctx.message.server, True)
 			if channel == "":
-				checkString+="\nJoin/Leave message channel is **not setup**"
+				embed.add_field(name="Join/leave Message Channel", value="**Not setup**", inline=False)
 			else:
 				joinleaveChannel = bot.get_channel(channel)
-				checkString+="\nJoin/Leave message channel is set to "+joinleaveChannel.mention
+				embed.add_field(name="Join/leave Message Channel", value=joinleaveChannel.mention, inline=False)
+				
 			# Join Leave Text
 			joinMsgText = await check_config('joinMsgText', ctx.message.server, True)
 			if (joinMsgText == ""):
 				joinMsgText = "Welcome {user}"
-			checkString+="\nJoin messages text is set to: \n```"+joinMsgText+"```"
+			embed.add_field(name="Join Message Text", value='`'+joinMsgText+'`', inline=False)
 
 			leaveMsgText = await check_config('leaveMsgText', ctx.message.server, True)
 			if (leaveMsgText == ""):
 				leaveMsgText = "{user} has left the server"
-			checkString+="\nLeave messages text is set to: \n```"+leaveMsgText+"```"
+			embed.add_field(name="Leave Message Text", value='`'+leaveMsgText+'`', inline=False)
+			
 			# Joindm text
 			joinDmText = (await check_config('joinDmText', ctx.message.server, True))
 			if joinDmText == "":
-				checkString+="\nJoin Dm message text is **not set up**"
+				embed.add_field(name="Join DM Text", value='**Not setup**', inline=False)
 			else:
-				checkString+="\nJoin Dm message text is set to: \n```"+joinDmText+"```"
-		await bot.say(checkString)
+				embed.add_field(name="Join DM Text", value='`'+joinDmText+'`', inline=False)
+		await bot.say(embed=embed)
 
 	except:
 		await bot.say("Error getting server settings")
@@ -662,9 +747,12 @@ async def config(ctx, command: str, *args):
 			#Swear blocking level
 			elif (command.lower() == 'swear'):
 				if (int(input) >= 0 and int(input) <= 3):
-					config[ctx.message.server.id]["enabled"]["swear"] = int(
-						input)
+					config[ctx.message.server.id]["swear"] = int(input)
 					await bot.say("Set swear blocking level to "+input)
+				elif (int(input)):
+					config[ctx.message.server.id]["enabled"]["swear"] = 0
+					await bot_disable(ctx.message.server, 'swear')
+					await bot.say("Disabled swear blocking")
 				else:
 					await bot.say("Invalid level, must be between 0-3")
 			#Roles
@@ -694,33 +782,37 @@ async def config(ctx, command: str, *args):
 			elif (command.lower() == 'joindm'):
 				if (len(" ".join(args)) <= 200):
 					config[ctx.message.server.id]["joinDmText"] = " ".join(args).replace('\\n', '\n')
-					await bot.say("Join dm message set to ```"+config[ctx.message.server.id]["joinDmText"]+"```")
+					await bot.say("Join dm message set to ```"+config[ctx.message.server.id]["joinDmText"]+"\n```")
 				else:
 					await bot.say("Too many characters, max 200")
 					return
-
+			#Join Message
 			elif (command.lower() == 'joinmsg'):
 				if (len(" ".join(args)) <= 200):
 					config[ctx.message.server.id]["joinMsgText"] = " ".join(args).replace('\\n', '\n')
-					await bot.say("Join message set to ```"+config[ctx.message.server.id]["joinMsgText"]+"```")
+					await bot.say("Join message set to ```"+config[ctx.message.server.id]["joinMsgText"]+"\n```")
 				else:
 					await bot.say("Too many characters, max 200")
 					return
-
+			#Leave message
 			elif (command.lower() == 'leavemsg'):
 				if (len(" ".join(args)) <= 200):
 					config[ctx.message.server.id]["leaveMsgText"] = " ".join(args).replace('\\n', '\n')
-					await bot.say("Leave message set to ```"+config[ctx.message.server.id]["leaveMsgText"]+"```")
+					await bot.say("Leave message set to ```"+config[ctx.message.server.id]["leaveMsgText"]+"\n```")
 				else:
 					await bot.say("Too many characters, max 200")
 					return
+			#Clear config
 			elif (command.lower() == 'clear'):
 				await bot.say("Are you sure you want to clear this my config for this server? Type `confirm` if you're sure")
-				await bot.wait_for_message(timeout=20, author=ctx.message.author,content='confirm')
-				del config[ctx.message.server.id]
-				await bot.say("Cleared this server's config")
+				msg = await bot.wait_for_message(timeout=20, author=ctx.message.author,content='confirm')
+				if(msg!=None):
+					del config[ctx.message.server.id]
+					await bot.say("Cleared this server's config")
+				else:
+					await bot.say("Config clear timed out")
 			else:
-				await bot.say("Invalid argument. Do `!help set` for more info")
+				await bot.say("Invalid argument. Do `+help set` for more info")
 		else:
 			bot.say("You must have administrator to configure a command")
 		with open("config.json", "w") as j:
@@ -739,7 +831,7 @@ async def ping(ctx):
 # Allows users to set their own roles
 @bot.command(pass_context=True)
 async def role(ctx, *args):
-	if (await check_config('role', ctx.message.author.server, False) == 1):
+	if (await check_config('role', ctx.message.author.server, False)):
 		if str(args) == "()":
 			roleList = await check_config('role', ctx.message.server, True)
 			a = 0
@@ -748,9 +840,9 @@ async def role(ctx, *args):
 				roleList[a] = str(role)
 				a += 1
 			if None in roleList:
-				await bot.say("Unable to find roles, try `!config role` to reset them")
+				await bot.say("Unable to find roles, try `+config role` to reset them")
 			elif len(roleList) == 0:
-				await bot.say("No roles have been set using `!config role`\nDisabling !role now")
+				await bot.say("No roles have been set using `+config role`\nDisabling +role now")
 				await bot_disable(ctx.message.server, 'role')
 			else:
 				await bot.say("You can set your roles to the following: `"+'`, `'.join(roleList)+"`")
@@ -764,7 +856,7 @@ async def role(ctx, *args):
 				roleList[a] = str(role)
 				a += 1
 			if None in roleList:
-				await bot.say("Unable to find roles, try `!config roles` to reset them")
+				await bot.say("Unable to find roles, try `+config roles` to reset them")
 			role = discord.utils.get(
 				ctx.message.server.roles, name=" ".join(args))
 			if str(role) in (roleList):
@@ -779,7 +871,7 @@ async def role(ctx, *args):
 						await bot.remove_roles(ctx.message.author, role)
 						await bot.say("Removed you from the `"+role.name+"` role")
 				else:
-					await bot.say("Sorry, I do not have permission to set roles.\nDisabling !role now")
+					await bot.say("Sorry, I do not have permission to set roles.\nDisabling +role now")
 					await bot_disable(ctx.message.server, 'role')
 			else:
 				await bot.say("That is not a valid role")
@@ -795,28 +887,27 @@ async def bot_disable(server, command):
 	with open('config.json', 'r') as j:
 		config = json.load(j)
 		await update_data(config, server)
-	config[server.id]["enabled"][command] = 0
+	config[server.id]["enabled"][command] = False
 	with open("config.json", "w") as j:
 		json.dump(config, j, indent=4, sort_keys=True)
 
 # Function to update json file
-
-
 async def update_data(config, server):
 	if not server.id in config:
 		config[server.id] = {}
 		config[server.id]["enabled"] = {}
-		config[server.id]["enabled"]['join'] = 1
-		config[server.id]["enabled"]['leave'] = 1
-		config[server.id]["enabled"]['kick'] = 1
-		config[server.id]["enabled"]['ban'] = 1
-		config[server.id]["enabled"]['purge'] = 1
-		config[server.id]["enabled"]['report'] = 0
-		config[server.id]["enabled"]['invite'] = 0
-		config[server.id]["enabled"]['swear'] = 1
-		config[server.id]["enabled"]['role'] = 0
-		config[server.id]["enabled"]['joinDm'] = 0
-		config[server.id]["enabled"]['link'] = 0
+		config[server.id]["enabled"]['join'] = True
+		config[server.id]["enabled"]['leave'] = True
+		config[server.id]["enabled"]['kick'] = True
+		config[server.id]["enabled"]['ban'] = True
+		config[server.id]["enabled"]['purge'] = True
+		config[server.id]["enabled"]['report'] = False
+		config[server.id]["enabled"]['invite'] = False
+		config[server.id]["enabled"]['swear'] = True
+		config[server.id]["enabled"]['role'] = False
+		config[server.id]["enabled"]['joinDm'] = False
+		config[server.id]["enabled"]['link'] = False
+		config[server.id]['swear'] = 1
 		config[server.id]["joinleaveChannel"] = ""
 		config[server.id]["reportChannel"] = ""
 		config[server.id]["joinDmText"] = ""

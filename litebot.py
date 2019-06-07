@@ -605,14 +605,21 @@ async def check(ctx):
 			embed.add_field(name=i + " messages", value=cmdEnabled, inline=False)
 
 		# Kick Ban Purge & Report
-		basicCommands = ["Kick", "Ban", "Purge", "Report", "JoinDm"]
+		basicCommands = ["Kick", "Ban", "Purge", "Report"]
 		for i in basicCommands:
 			if (await check_config(i.lower(), ctx.message.server, False)):
 				cmdEnabled = "Enabled"
 			else:
 				cmdEnabled = "Disabled"
 			embed.add_field(name=i, value=cmdEnabled, inline=False)
-
+		
+		# JoinDm
+		if (await check_config('JoinDm', ctx.message.server, False)):
+			cmdEnabled = "Enabled"
+		else:
+			cmdEnabled = "Disabled"
+		embed.add_field(name="JoinDm", value=cmdEnabled, inline=False)
+		
 		# Invite Blocking
 		if (await check_config('invite', ctx.message.server, False)):
 			cmdEnabled = "Enabled"

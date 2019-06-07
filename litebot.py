@@ -614,7 +614,7 @@ async def check(ctx):
 			embed.add_field(name=i, value=cmdEnabled, inline=False)
 		
 		# JoinDm
-		if (await check_config('JoinDm', ctx.message.server, False)):
+		if (await check_config('joinDm', ctx.message.server, False)):
 			cmdEnabled = "Enabled"
 		else:
 			cmdEnabled = "Disabled"

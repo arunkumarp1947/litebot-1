@@ -113,7 +113,7 @@ async def on_message(message, timeout=10):
 			if (message.server.me.server_permissions.manage_messages or message.server.me.server_permissions.administrator):
 				if ("discord.gg" in message.content.lower()):
 					await bot.delete_message(message)
-					await bot.send_message(message.channel, "Invites are not allowed in this server")
+					await bot.send_message(message.author, "Invites are not allowed in **"+message.author.server.name+"**")
 					return
 			else:
 				unableToCheckMessages = True
@@ -122,7 +122,7 @@ async def on_message(message, timeout=10):
 			if (message.server.me.server_permissions.manage_messages or message.server.me.server_permissions.administrator):
 				if ("http://" in message.content.lower()or("https://" in message.content.lower())):
 					await bot.delete_message(message)
-					await bot.send_message(message.channel, "Links are not allowed in this server")
+					await bot.send_message(message.author, "Links are not allowed in **"+message.author.server.name+"**")
 					return
 			else:
 				unableToCheckMessages = True
@@ -296,7 +296,7 @@ async def kick(ctx, Member: discord.User):
 					else:
 						await bot.say("You do not have permission to kick** " + Member.name + "**")
 				else:
-					await bot.say("Sorry, I do not have permission to ban\nDisabling kick now")
+					await bot.say("Sorry, I do not have permission to kick\nDisabling kick now")
 					await bot_disable(ctx.message.server, "kick")
 		else:
 			await bot.say("Kick is disabled")

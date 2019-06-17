@@ -15,28 +15,15 @@ bot.remove_command('help')
 @bot.event
 async def on_ready():
 	print('Ready\n')
-	print("                     ")
-	print("	  .__(.)< (MEOW)    ")
-	print("	  \___)             ")
-	print("~~~~~~~~~~~~~~~~~~~~~")
-	await bot.change_presence(game=discord.Game(name='over the Server | +help',type=3,url="http://jxhub.xyz"))
-	updateConsole()
-
+	await bot.change_presence(game=discord.Game(name=str(len(set(bot.get_all_members()))-1)+" users | "+str(len(bot.servers))+" servers",type=3,url="http://jxhub.xyz"))
+		
 @bot.async_event
 async def on_server_join(Server: discord.Server):
-	updateConsole()
+	await bot.change_presence(game=discord.Game(name=str(len(set(bot.get_all_members()))-1)+" users | "+str(len(bot.servers))+" servers",type=3,url="http://jxhub.xyz"))
 
 @bot.async_event
 async def on_server_remove(Server: discord.Server):
-	updateConsole()
-
-def updateConsole():
-	print("{members} users in {servers} servers".format(members=str(
-		len(set(bot.get_all_members()))-1), servers=str(len(bot.servers))), end='\r')
-	with open('servers.txt', 'w') as f:
-		for item in bot.servers:
-			f.write("%s\n" % item)
-
+	await bot.change_presence(game=discord.Game(name=str(len(set(bot.get_all_members()))-1)+" users | "+str(len(bot.servers))+" servers",type=3,url="http://jxhub.xyz"))
 # Message on user join
 @bot.async_event
 async def on_member_join(Member: discord.User):
@@ -58,9 +45,9 @@ async def on_member_join(Member: discord.User):
 			elif (len(dmText) >= 200):
 				return
 			await bot.send_message(Member, dmText.format(user=Member.mention, server=Member.server.name))
-		updateConsole()
 	except:
 		print("Error")
+	await bot.change_presence(game=discord.Game(name=str(len(set(bot.get_all_members()))-1)+" users | "+str(len(bot.servers))+" servers",type=3,url="http://jxhub.xyz"))
 
 # Message on user leave
 @bot.async_event
@@ -73,9 +60,9 @@ async def on_member_remove(Member: discord.User):
 				leaveMsgText = "{user} has left the server"
 			if (channel != None):
 				await bot.send_message(channel, leaveMsgText.format(user=Member.name, server=Member.server.name))
-		updateConsole()
 	except:
 		print("Error")
+	await bot.change_presence(game=discord.Game(name=str(len(set(bot.get_all_members()))-1)+" users | "+str(len(bot.servers))+" servers",type=3,url="http://jxhub.xyz"))	
 
 # Deletes messages that include key words, and discord invites
 @bot.event

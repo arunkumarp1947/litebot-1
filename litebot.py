@@ -27,7 +27,8 @@ async def on_server_remove(Server: discord.Server):
 # Message on user join
 @bot.async_event
 async def on_member_join(Member: discord.User):
-	try:
+	try:		
+		await bot.change_presence(game=discord.Game(name=str(len(set(bot.get_all_members()))-1)+" users | "+str(len(bot.servers))+" servers",type=3,url="http://jxhub.xyz"))
 		# Join message
 		if (await check_config('join', Member.server, False)):
 			channel = bot.get_channel(await check_config('joinleaveChannel', Member.server, True))
@@ -47,12 +48,12 @@ async def on_member_join(Member: discord.User):
 			await bot.send_message(Member, dmText.format(user=Member.mention, server=Member.server.name))
 	except:
 		print("Error")
-	await bot.change_presence(game=discord.Game(name=str(len(set(bot.get_all_members()))-1)+" users | "+str(len(bot.servers))+" servers",type=3,url="http://jxhub.xyz"))
 
 # Message on user leave
 @bot.async_event
 async def on_member_remove(Member: discord.User):
-	try:
+	try:	
+		await bot.change_presence(game=discord.Game(name=str(len(set(bot.get_all_members()))-1)+" users | "+str(len(bot.servers))+" servers",type=3,url="http://jxhub.xyz"))
 		if (await check_config('leave', Member.server, False)):
 			channel = bot.get_channel(await check_config('joinleaveChannel', Member.server, True))
 			leaveMsgText = await check_config('leaveMsgText', Member.server, True)
@@ -62,7 +63,6 @@ async def on_member_remove(Member: discord.User):
 				await bot.send_message(channel, leaveMsgText.format(user=Member.name, server=Member.server.name))
 	except:
 		print("Error")
-	await bot.change_presence(game=discord.Game(name=str(len(set(bot.get_all_members()))-1)+" users | "+str(len(bot.servers))+" servers",type=3,url="http://jxhub.xyz"))	
 
 # Deletes messages that include key words, and discord invites
 @bot.event

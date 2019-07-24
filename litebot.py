@@ -71,21 +71,21 @@ async def on_message(message, timeout=10):
 	# Ensures bot only responds to valid message
 	if (message.channel.is_private == False and message.author != message.server.me):
 		# Makes sure swear is enabled
-		if (await check_config('swear', message.author.server, False)):
+		if (await check_config('swear', message.server, False)):
 			# Checks if bot has proper permissions
 			if (message.server.me.server_permissions.manage_messages or message.server.me.server_permissions.administrator):
 				toDelete = False
 				# Checks each word for swears
 				for i in words1:
-					if ((str(i) in message.content.lower()) and (await check_config('swear', message.author.server, True) >= 1)):
+					if ((str(i) in message.content.lower()) and (await check_config('swear', message.server, True) >= 1)):
 						toDelete = True
 
 				for i in words2:
-					if ((str(i) in message.content.lower()) and (await check_config('swear', message.author.server, True) >= 2)):
+					if ((str(i) in message.content.lower()) and (await check_config('swear', message.server, True) >= 2)):
 						toDelete = True
 
 				for i in words3:
-					if ((str(i) in message.content.lower()) and (await check_config('swear', message.author.server, True) >= 3)):
+					if ((str(i) in message.content.lower()) and (await check_config('swear', message.server, True) >= 3)):
 						toDelete = True
 
 				# Deletes message if contains swear
@@ -96,20 +96,20 @@ async def on_message(message, timeout=10):
 			else:
 				unableToCheckMessages = True
 		# Checks for server invites
-		if ((await check_config('invite', message.author.server, False))and(message.author.server_permissions.administrator == False)):
+		if ((await check_config('invite', message.server, False))and(message.server_permissions.administrator == False)):
 			if (message.server.me.server_permissions.manage_messages or message.server.me.server_permissions.administrator):
 				if ("discord.gg" in message.content.lower()):
 					await bot.delete_message(message)
-					await bot.send_message(message.author, "Invites are not allowed in **"+message.author.server.name+"**")
+					await bot.send_message(message.author, "Invites are not allowed in **"+message.server.name+"**")
 					return
 			else:
 				unableToCheckMessages = True
 		# Checks for links
-		if ((await check_config('link', message.author.server, False))and(message.author.server_permissions.administrator == False)):
+		if ((await check_config('link', message.server, False))and(message.server_permissions.administrator == False)):
 			if (message.server.me.server_permissions.manage_messages or message.server.me.server_permissions.administrator):
 				if ("http://" in message.content.lower()or("https://" in message.content.lower())):
 					await bot.delete_message(message)
-					await bot.send_message(message.author, "Links are not allowed in **"+message.author.server.name+"**")
+					await bot.send_message(message.author, "Links are not allowed in **"+message.server.name+"**")
 					return
 			else:
 				unableToCheckMessages = True
@@ -271,7 +271,7 @@ async def kick(ctx, Member: discord.User):
 				await bot.say("Unable to kick that user")
 			else:
 				if (ctx.message.server.me.server_permissions.kick_members or ctx.message.server.me.server_permissions.administrator):
-					if (ctx.message.author.server_permissions.kick_members or ctx.message.author.server_permissions.administrator):
+					if (ctx.message.server_permissions.kick_members or ctx.message.server_permissions.administrator):
 						if (ctx.message.author.top_role.position > Member.top_role.position):
 							try:
 								await bot.kick(Member)
@@ -302,7 +302,7 @@ async def ban(ctx, Member: discord.User, daysToDelete = 0):
 				await bot.say("Unable to ban that user")
 			else:
 				if (ctx.message.server.me.server_permissions.ban_members or ctx.message.server.me.server_permissions.administrator):
-					if (ctx.message.author.server_permissions.ban_members or ctx.message.author.server_permissions.administrator):
+					if (ctx.message.server_permissions.ban_members or ctx.message.server_permissions.administrator):
 						if (ctx.message.author.top_role.position > Member.top_role.position):
 							try:
 								await bot.ban(Member, delete_message_days=daysToDelete)
@@ -364,9 +364,9 @@ async def purge(ctx, numPurge: int, member: discord.Member = None):
 	def predicate(msg: discord.Message) -> bool:
 		return member is None or msg.author == member
 	try:
-		if (await check_config('purge', ctx.message.author.server, False)):
+		if (await check_config('purge', ctx.message.server, False)):
 			if (ctx.message.server.me.server_permissions.manage_messages or ctx.message.server.me.server_permissions.administrator):
-				if (ctx.message.author.server_permissions.manage_messages or ctx.message.author.server_permissions.administrator):
+				if (ctx.message.server_permissions.manage_messages or ctx.message.server_permissions.administrator):
 					if(numPurge >= 0 and numPurge <= 100):
 						await bot.delete_message(ctx.message)
 						try:
@@ -391,7 +391,7 @@ async def enable(ctx, command: str):
 		with open('config.json', 'r') as j:
 			config = json.load(j)
 			await update_data(config, ctx.message.server)
-		if (ctx.message.author.server_permissions.administrator):
+		if (ctx.message.server_permissions.administrator):
 			#Ban
 			if (command.lower() == "ban"):
 				if (config[ctx.message.server.id]["enabled"]["ban"]==False):
@@ -488,7 +488,7 @@ async def disable(ctx, command: str):
 		with open('config.json', 'r') as j:
 			config = json.load(j)
 			await update_data(config, ctx.message.server)
-		if (ctx.message.author.server_permissions.administrator):
+		if (ctx.message.server_permissions.administrator):
 						#Ban
 			if (command.lower() == "ban"):
 				if (config[ctx.message.server.id]["enabled"]["ban"]==True):
@@ -637,7 +637,7 @@ async def check(ctx):
 		embed.add_field(name="Self role setting", value=cmdEnabled, inline=False)
 
 		# Channels for admins
-		if (ctx.message.author.server_permissions.administrator):
+		if (ctx.message.server_permissions.administrator):
 			# Report channel
 			reportChannelBroken = False
 			channelId = await check_config('reportChannel', ctx.message.server, True)
@@ -704,7 +704,7 @@ async def config(ctx, command: str, *args):
 			config = json.load(j)
 			await update_data(config, ctx.message.server)
 
-		if (ctx.message.author.server_permissions.administrator):
+		if (ctx.message.server_permissions.administrator):
 			#Join/leave channel
 			if (command.lower() == 'join' or command.lower() == 'leave' or command.lower() == 'joinleave'):
 				channelId = input.replace('#', '').replace('<', '').replace('>', '')
@@ -818,7 +818,7 @@ async def ping(ctx):
 # Allows users to set their own roles
 @bot.command(pass_context=True)
 async def role(ctx, *args):
-	if (await check_config('role', ctx.message.author.server, False)):
+	if (await check_config('role', ctx.message.server, False)):
 		if str(args) == "()":
 			roleList = await check_config('role', ctx.message.server, True)
 			a = 0

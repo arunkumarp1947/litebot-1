@@ -487,7 +487,7 @@ async def enable(ctx, command: str):
 			else:
 				await bot.say("Invalid argument. Do `+help enable` for more info")
 		else:
-			bot.say("You must have administrator to enable or disable a command")
+			bot.say("You must have admin to enable or disable a command")
 		with open("config.json", "w") as j:
 			json.dump(config, j, indent=4, sort_keys=True)
 	except:

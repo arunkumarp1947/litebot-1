@@ -15,32 +15,20 @@ bot.remove_command('help')
 @bot.event
 async def on_ready():
 	print('Ready\n')
-	print("                     ")
-	print("	  .__(.)< (MEOW)    ")
-	print("	  \___)             ")
-	print("~~~~~~~~~~~~~~~~~~~~~")
-	await bot.change_presence(game=discord.Game(name='over the Server | +help',type=3,url="http://jxhub.xyz"))
-	updateConsole()
-
+	await bot.change_presence(game=discord.Game(name=str(len(set(bot.get_all_members()))-1)+" users | "+str(len(bot.servers))+" servers",type=3,url="http://jxhub.xyz"))
+		
 @bot.async_event
 async def on_server_join(Server: discord.Server):
-	updateConsole()
+	await bot.change_presence(game=discord.Game(name=str(len(set(bot.get_all_members()))-1)+" users | "+str(len(bot.servers))+" servers",type=3,url="http://jxhub.xyz"))
 
 @bot.async_event
 async def on_server_remove(Server: discord.Server):
-	updateConsole()
-
-def updateConsole():
-	print("{members} users in {servers} servers".format(members=str(
-		len(set(bot.get_all_members()))-1), servers=str(len(bot.servers))), end='\r')
-	with open('servers.txt', 'w') as f:
-		for item in bot.servers:
-			f.write("%s\n" % item)
-
+	await bot.change_presence(game=discord.Game(name=str(len(set(bot.get_all_members()))-1)+" users | "+str(len(bot.servers))+" servers",type=3,url="http://jxhub.xyz"))
 # Message on user join
 @bot.async_event
 async def on_member_join(Member: discord.User):
-	try:
+	try:		
+		await bot.change_presence(game=discord.Game(name=str(len(set(bot.get_all_members()))-1)+" users | "+str(len(bot.servers))+" servers",type=3,url="http://jxhub.xyz"))
 		# Join message
 		if (await check_config('join', Member.server, False)):
 			channel = bot.get_channel(await check_config('joinleaveChannel', Member.server, True))
@@ -58,14 +46,14 @@ async def on_member_join(Member: discord.User):
 			elif (len(dmText) >= 200):
 				return
 			await bot.send_message(Member, dmText.format(user=Member.mention, server=Member.server.name))
-		updateConsole()
 	except:
 		print("Error")
 
 # Message on user leave
 @bot.async_event
 async def on_member_remove(Member: discord.User):
-	try:
+	try:	
+		await bot.change_presence(game=discord.Game(name=str(len(set(bot.get_all_members()))-1)+" users | "+str(len(bot.servers))+" servers",type=3,url="http://jxhub.xyz"))
 		if (await check_config('leave', Member.server, False)):
 			channel = bot.get_channel(await check_config('joinleaveChannel', Member.server, True))
 			leaveMsgText = await check_config('leaveMsgText', Member.server, True)
@@ -73,7 +61,6 @@ async def on_member_remove(Member: discord.User):
 				leaveMsgText = "{user} has left the server"
 			if (channel != None):
 				await bot.send_message(channel, leaveMsgText.format(user=Member.name, server=Member.server.name))
-		updateConsole()
 	except:
 		print("Error")
 
@@ -84,21 +71,21 @@ async def on_message(message, timeout=10):
 	# Ensures bot only responds to valid message
 	if (message.channel.is_private == False and message.author != message.server.me):
 		# Makes sure swear is enabled
-		if (await check_config('swear', message.author.server, False)):
+		if (await check_config('swear', message.server, False)):
 			# Checks if bot has proper permissions
 			if (message.server.me.server_permissions.manage_messages or message.server.me.server_permissions.administrator):
 				toDelete = False
 				# Checks each word for swears
 				for i in words1:
-					if ((str(i) in message.content.lower()) and (await check_config('swear', message.author.server, True) >= 1)):
+					if ((str(i) in message.content.lower()) and (await check_config('swear', message.server, True) >= 1)):
 						toDelete = True
 
 				for i in words2:
-					if ((str(i) in message.content.lower()) and (await check_config('swear', message.author.server, True) >= 2)):
+					if ((str(i) in message.content.lower()) and (await check_config('swear', message.server, True) >= 2)):
 						toDelete = True
 
 				for i in words3:
-					if ((str(i) in message.content.lower()) and (await check_config('swear', message.author.server, True) >= 3)):
+					if ((str(i) in message.content.lower()) and (await check_config('swear', message.server, True) >= 3)):
 						toDelete = True
 
 				# Deletes message if contains swear
@@ -109,20 +96,20 @@ async def on_message(message, timeout=10):
 			else:
 				unableToCheckMessages = True
 		# Checks for server invites
-		if ((await check_config('invite', message.author.server, False))and(message.author.server_permissions.administrator == False)):
+		if ((await check_config('invite', message.server, False))and(message.server_permissions.administrator == False)):
 			if (message.server.me.server_permissions.manage_messages or message.server.me.server_permissions.administrator):
 				if ("discord.gg" in message.content.lower()):
 					await bot.delete_message(message)
-					await bot.send_message(message.channel, "Invites are not allowed in this server")
+					await bot.send_message(message.author, "Invites are not allowed in **"+message.server.name+"**")
 					return
 			else:
 				unableToCheckMessages = True
 		# Checks for links
-		if ((await check_config('link', message.author.server, False))and(message.author.server_permissions.administrator == False)):
+		if ((await check_config('link', message.server, False))and(message.server_permissions.administrator == False)):
 			if (message.server.me.server_permissions.manage_messages or message.server.me.server_permissions.administrator):
 				if ("http://" in message.content.lower()or("https://" in message.content.lower())):
 					await bot.delete_message(message)
-					await bot.send_message(message.channel, "Links are not allowed in this server")
+					await bot.send_message(message.author, "Links are not allowed in **"+message.server.name+"**")
 					return
 			else:
 				unableToCheckMessages = True
@@ -271,7 +258,7 @@ async def help(ctx, *args):
 		embed.add_field(name="Features", value="`join messages`, `leave messages`, `swear blocking`, `invite blocking`, `link blocking`, `Join DM`, and `self role setting`", inline=False)
 		embed.add_field(name="Regular Commands", value="`+ping`, `+role`, `+report`", inline=False)
 		embed.add_field(name="Moderator Commands", value="`+kick`, `+ban`, `+purge`", inline=False)
-		embed.add_field(name="Administor Commands", value="`+config`, `+enable`, `+disable`, `+check`", inline=False)
+		embed.add_field(name="Admin Commands", value="`+config`, `+enable`, `+disable`, `+check`", inline=False)
 		await bot.say(embed=embed)
 
 # Kick user
@@ -284,7 +271,7 @@ async def kick(ctx, Member: discord.User):
 				await bot.say("Unable to kick that user")
 			else:
 				if (ctx.message.server.me.server_permissions.kick_members or ctx.message.server.me.server_permissions.administrator):
-					if (ctx.message.author.server_permissions.kick_members or ctx.message.author.server_permissions.administrator):
+					if (ctx.message.server_permissions.kick_members or ctx.message.server_permissions.administrator):
 						if (ctx.message.author.top_role.position > Member.top_role.position):
 							try:
 								await bot.kick(Member)
@@ -296,7 +283,7 @@ async def kick(ctx, Member: discord.User):
 					else:
 						await bot.say("You do not have permission to kick** " + Member.name + "**")
 				else:
-					await bot.say("Sorry, I do not have permission to ban\nDisabling kick now")
+					await bot.say("Sorry, I do not have permission to kick\nDisabling kick now")
 					await bot_disable(ctx.message.server, "kick")
 		else:
 			await bot.say("Kick is disabled")
@@ -315,7 +302,7 @@ async def ban(ctx, Member: discord.User, daysToDelete = 0):
 				await bot.say("Unable to ban that user")
 			else:
 				if (ctx.message.server.me.server_permissions.ban_members or ctx.message.server.me.server_permissions.administrator):
-					if (ctx.message.author.server_permissions.ban_members or ctx.message.author.server_permissions.administrator):
+					if (ctx.message.server_permissions.ban_members or ctx.message.server_permissions.administrator):
 						if (ctx.message.author.top_role.position > Member.top_role.position):
 							try:
 								await bot.ban(Member, delete_message_days=daysToDelete)
@@ -377,9 +364,9 @@ async def purge(ctx, numPurge: int, member: discord.Member = None):
 	def predicate(msg: discord.Message) -> bool:
 		return member is None or msg.author == member
 	try:
-		if (await check_config('purge', ctx.message.author.server, False)):
+		if (await check_config('purge', ctx.message.server, False)):
 			if (ctx.message.server.me.server_permissions.manage_messages or ctx.message.server.me.server_permissions.administrator):
-				if (ctx.message.author.server_permissions.manage_messages or ctx.message.author.server_permissions.administrator):
+				if (ctx.message.server_permissions.manage_messages or ctx.message.server_permissions.administrator):
 					if(numPurge >= 0 and numPurge <= 100):
 						await bot.delete_message(ctx.message)
 						try:
@@ -404,7 +391,7 @@ async def enable(ctx, command: str):
 		with open('config.json', 'r') as j:
 			config = json.load(j)
 			await update_data(config, ctx.message.server)
-		if (ctx.message.author.server_permissions.administrator):
+		if (ctx.message.server_permissions.administrator):
 			#Ban
 			if (command.lower() == "ban"):
 				if (config[ctx.message.server.id]["enabled"]["ban"]==False):
@@ -501,7 +488,7 @@ async def disable(ctx, command: str):
 		with open('config.json', 'r') as j:
 			config = json.load(j)
 			await update_data(config, ctx.message.server)
-		if (ctx.message.author.server_permissions.administrator):
+		if (ctx.message.server_permissions.administrator):
 						#Ban
 			if (command.lower() == "ban"):
 				if (config[ctx.message.server.id]["enabled"]["ban"]==True):
@@ -650,7 +637,7 @@ async def check(ctx):
 		embed.add_field(name="Self role setting", value=cmdEnabled, inline=False)
 
 		# Channels for admins
-		if (ctx.message.author.server_permissions.administrator):
+		if (ctx.message.server_permissions.administrator):
 			# Report channel
 			reportChannelBroken = False
 			channelId = await check_config('reportChannel', ctx.message.server, True)
@@ -717,7 +704,7 @@ async def config(ctx, command: str, *args):
 			config = json.load(j)
 			await update_data(config, ctx.message.server)
 
-		if (ctx.message.author.server_permissions.administrator):
+		if (ctx.message.server_permissions.administrator):
 			#Join/leave channel
 			if (command.lower() == 'join' or command.lower() == 'leave' or command.lower() == 'joinleave'):
 				channelId = input.replace('#', '').replace('<', '').replace('>', '')
@@ -831,7 +818,7 @@ async def ping(ctx):
 # Allows users to set their own roles
 @bot.command(pass_context=True)
 async def role(ctx, *args):
-	if (await check_config('role', ctx.message.author.server, False)):
+	if (await check_config('role', ctx.message.server, False)):
 		if str(args) == "()":
 			roleList = await check_config('role', ctx.message.server, True)
 			a = 0

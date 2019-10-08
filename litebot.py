@@ -258,7 +258,7 @@ async def help(ctx, *args):
 		embed.add_field(name="Features", value="`join messages`, `leave messages`, `swear blocking`, `invite blocking`, `link blocking`, `Join DM`, and `self role setting`", inline=False)
 		embed.add_field(name="Regular Commands", value="`+ping`, `+role`, `+report`", inline=False)
 		embed.add_field(name="Moderator Commands", value="`+kick`, `+ban`, `+purge`", inline=False)
-		embed.add_field(name="Administor Commands", value="`+config`, `+enable`, `+disable`, `+check`", inline=False)
+		embed.add_field(name="Admin Commands", value="`+config`, `+enable`, `+disable`, `+check`", inline=False)
 		await bot.say(embed=embed)
 
 # Kick user

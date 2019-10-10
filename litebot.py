@@ -96,7 +96,7 @@ async def on_message(message, timeout=10):
 			else:
 				unableToCheckMessages = True
 		# Checks for server invites
-		if ((await check_config('invite', message.server, False))and(message.server_permissions.administrator == False)):
+		if ((await check_config('invite', message.server, False))and(message.server.me.server_permissions.administrator == False)):
 			if (message.server.me.server_permissions.manage_messages or message.server.me.server_permissions.administrator):
 				if ("discord.gg" in message.content.lower()):
 					await bot.delete_message(message)

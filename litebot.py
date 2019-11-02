@@ -96,7 +96,7 @@ async def on_message(message, timeout=10):
 			else:
 				unableToCheckMessages = True
 		# Checks for server invites
-		if ((await check_config('invite', message.server, False))and(message.server_permissions.administrator == False)):
+		if ((await check_config('invite', message.server, False))and(message.server.me.server_permissions.administrator == False)):
 			if (message.server.me.server_permissions.manage_messages or message.server.me.server_permissions.administrator):
 				if ("discord.gg" in message.content.lower()):
 					await bot.delete_message(message)
@@ -105,7 +105,7 @@ async def on_message(message, timeout=10):
 			else:
 				unableToCheckMessages = True
 		# Checks for links
-		if ((await check_config('link', message.server, False))and(message.server_permissions.administrator == False)):
+		if ((await check_config('link', message.server, False))and(message.server.me.server_permissions.administrator == False)):
 			if (message.server.me.server_permissions.manage_messages or message.server.me.server_permissions.administrator):
 				if ("http://" in message.content.lower()or("https://" in message.content.lower())):
 					await bot.delete_message(message)
@@ -271,7 +271,7 @@ async def kick(ctx, Member: discord.User):
 				await bot.say("Unable to kick that user")
 			else:
 				if (ctx.message.server.me.server_permissions.kick_members or ctx.message.server.me.server_permissions.administrator):
-					if (ctx.message.server_permissions.kick_members or ctx.message.server_permissions.administrator):
+					if (ctx.message.server.me.server_permissions.kick_members or ctx.message.server.me.server_permissions.administrator):
 						if (ctx.message.author.top_role.position > Member.top_role.position):
 							try:
 								await bot.kick(Member)
@@ -302,7 +302,7 @@ async def ban(ctx, Member: discord.User, daysToDelete = 0):
 				await bot.say("Unable to ban that user")
 			else:
 				if (ctx.message.server.me.server_permissions.ban_members or ctx.message.server.me.server_permissions.administrator):
-					if (ctx.message.server_permissions.ban_members or ctx.message.server_permissions.administrator):
+					if (ctx.message.server.me.server_permissions.ban_members or ctx.message.server.me.server_permissions.administrator):
 						if (ctx.message.author.top_role.position > Member.top_role.position):
 							try:
 								await bot.ban(Member, delete_message_days=daysToDelete)
@@ -366,7 +366,7 @@ async def purge(ctx, numPurge: int, member: discord.Member = None):
 	try:
 		if (await check_config('purge', ctx.message.server, False)):
 			if (ctx.message.server.me.server_permissions.manage_messages or ctx.message.server.me.server_permissions.administrator):
-				if (ctx.message.server_permissions.manage_messages or ctx.message.server_permissions.administrator):
+				if (ctx.message.server.me.server_permissions.manage_messages or ctx.message.server.me.server_permissions.administrator):
 					if(numPurge >= 0 and numPurge <= 100):
 						await bot.delete_message(ctx.message)
 						try:
@@ -391,7 +391,7 @@ async def enable(ctx, command: str):
 		with open('config.json', 'r') as j:
 			config = json.load(j)
 			await update_data(config, ctx.message.server)
-		if (ctx.message.server_permissions.administrator):
+		if (ctx.message.server.me.server_permissions.administrator):
 			#Ban
 			if (command.lower() == "ban"):
 				if (config[ctx.message.server.id]["enabled"]["ban"]==False):
@@ -474,7 +474,7 @@ async def enable(ctx, command: str):
 			else:
 				await bot.say("Invalid argument. Do `+help enable` for more info")
 		else:
-			bot.say("You must have administrator to enable or disable a command")
+			bot.say("You must have admin to enable or disable a command")
 		with open("config.json", "w") as j:
 			json.dump(config, j, indent=4, sort_keys=True)
 	except:
@@ -488,7 +488,7 @@ async def disable(ctx, command: str):
 		with open('config.json', 'r') as j:
 			config = json.load(j)
 			await update_data(config, ctx.message.server)
-		if (ctx.message.server_permissions.administrator):
+		if (ctx.message.server.me.server_permissions.administrator):
 						#Ban
 			if (command.lower() == "ban"):
 				if (config[ctx.message.server.id]["enabled"]["ban"]==True):
@@ -637,7 +637,7 @@ async def check(ctx):
 		embed.add_field(name="Self role setting", value=cmdEnabled, inline=False)
 
 		# Channels for admins
-		if (ctx.message.server_permissions.administrator):
+		if (ctx.message.server.me.server_permissions.administrator):
 			# Report channel
 			reportChannelBroken = False
 			channelId = await check_config('reportChannel', ctx.message.server, True)
@@ -704,7 +704,7 @@ async def config(ctx, command: str, *args):
 			config = json.load(j)
 			await update_data(config, ctx.message.server)
 
-		if (ctx.message.server_permissions.administrator):
+		if (ctx.message.server.me.server_permissions.administrator):
 			#Join/leave channel
 			if (command.lower() == 'join' or command.lower() == 'leave' or command.lower() == 'joinleave'):
 				channelId = input.replace('#', '').replace('<', '').replace('>', '')

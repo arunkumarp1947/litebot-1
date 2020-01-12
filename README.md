@@ -1,5 +1,5 @@
 # litebot
-Litebot is a dicord bot for simple moderation. It can delete messages containing banned words, announce when users join or leave the server, report a user to the owner and more. More features are coming soon
+Litebot is a dicord bot for simple moderation with the prefix `+`. It can delete messages containing banned words, announce when users join or leave the server, report a user to the owner and more. More features are coming soon
 ## Invite
 
 [Invite Litebot Here](https://discordapp.com/oauth2/authorize?client_id=405829095054770187&scope=bot&permissions=11278)
@@ -18,10 +18,9 @@ Litebot is a dicord bot for simple moderation. It can delete messages containing
 - ☑ Roles from command
 - ☑ Custom DM to new users
 - ☑ Custom text for join/leave
-- ☐ Convert !check into an embed
+- ☑ Convert +check into an embed
 - ☐ Add support for custom language (Output only, shouldn't require google translate)
 - ☐ Logging channel
-- ☐ New/server specific prefix
 
 ## Most Likely not going to do
 - ☐ Music System

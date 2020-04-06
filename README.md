@@ -1,5 +1,8 @@
 # litebot
-Litebot is a dicord bot for simple moderation. It can delete messages containing banned words, announce when users join or leave the server, report a user to the owner and more. More features are coming soon
+
+## NOTE: Discord.py 1.0.0 has made some major changes that litebot is not compatible with. However, it still currently runs on version 0.16.12 with no major issues
+
+Litebot is a discord bot for simple moderation with the prefix `+`. It can delete messages containing banned words, announce when users join or leave the server, report a user to the owner and more. More features are coming soon
 ## Invite
 
 [Invite Litebot Here](https://discordapp.com/oauth2/authorize?client_id=405829095054770187&scope=bot&permissions=11278)

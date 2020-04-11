@@ -2,26 +2,21 @@
 
 ## NOTE: Discord.py 1.0.0 has made some major changes that litebot is not compatible with. However, it still currently runs on version 0.16.12 with no major issues
 
-Litebot is a discord bot for simple moderation with the prefix `+`. It can delete messages containing banned words, announce when users join or leave the server, report a user to the owner and more. More features are coming soon
+Litebot is a discord bot for simple moderation with the prefix `+`. It can delete messages containing banned words, announce when users join or leave the server, report a user to the owner and more.
 ## Invite
 
 [Invite Litebot Here](https://discordapp.com/oauth2/authorize?client_id=405829095054770187&scope=bot&permissions=11278)
 
+## Features
+- Join/Leave messages 
+- Dm users on joining
+- Kick or ban users
+- Purge messages
+- Report users to server moderators
+- Block messages containing server invites, links and/or swearing
+- Set roles from command
+
 ## To do
-- ☑ Deletes messages containing any words in words (Different levels of swear blocking)
-- ☑ Join & Leave messages
-- ☑ Kicking & Banning commands
-- ☑ Report command (Set which channel or user the reports go to)
-- ☑ Purge Messages 
-- ☑ Help command
-- ☑ Invite blocking
-- ☑ Server specific disabling/enabling commands & channels for join/leave
-- ☑ Support for minimal permissions
-- ☑ Check command to see what commands are enabled
-- ☑ Roles from command
-- ☑ Custom DM to new users
-- ☑ Custom text for join/leave
-- ☑ Convert !check into an embed
 - ☐ Auto-Ban users after set number of warnings
 - ☐ Logging channel
 
@@ -41,8 +36,6 @@ Litebot is a discord bot for simple moderation with the prefix `+`. It can delet
 - Can be enabled/disabled with `!enable leave`
 ### Swear Blocking
 - Deletes messages containing words depending on the level swear blocking is set to (Goes from 0-3)
-- If swear level is set to 2, it deletes messages contained in words1 & words2
-- If the swear level is set to 3, it deletes messages contained in words1, words2 & words3
 - If the command is disabled, it is set to 0
 - Can be enabled/disabled with `!enable swear`(If enabled it defaults to 1)
 - Can be set with `!set swear 2`

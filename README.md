@@ -31,6 +31,10 @@ Litebot is a discord bot for simple moderation with the prefix `+`. It can delet
 - Sends a message when a user joins the Server
 - "Welcome @username#0000"
 - Can be enabled/disabled with `!enable join`
+### JoinDm Message
+- Sends a direct message when a user joins the Server
+- Can be enabled/disabled with `!enable joindm`
+- Can be set with `!config joindm <message>`
 ### Leave Message
 - Sends a message when a user leaves the Server
 - "**username** has left the server"
@@ -67,7 +71,7 @@ Litebot is a discord bot for simple moderation with the prefix `+`. It can delet
 - User must have delete message perm or admin perm
 - Can only purge between 0-100 messages
 -`!purge 20`
-### Enable/Disable
+### Enable/Disable  
 - Used to enable or disable a command
 - Use `!enable <command>` or `!disable <command>`
 ### Config

@@ -15,7 +15,7 @@ bot.remove_command('help')
 @bot.event
 async def on_ready():
 	print('Ready\n')
-	await bot.change_presence(game=discord.Game(name=str(len(set(bot.get_all_members()))-1)+" users | "+str(len(bot.servers))+" servers",type=3,url="http://jxhub.xyz"))
+	await bot.change_presence(game=discord.Game(name=str('{:,}'.format(len(set(bot.get_all_members()))-1))+" users | "+str(len(bot.servers))+" servers",type=3,url="http://jxhub.xyz"))
 		
 @bot.async_event
 async def on_server_join(Server: discord.Server):
@@ -901,7 +901,7 @@ async def update_data(config, server):
 		config[server.id]["enabled"]['purge'] = True
 		config[server.id]["enabled"]['report'] = False
 		config[server.id]["enabled"]['invite'] = False
-		config[server.id]["enabled"]['swear'] = True
+		config[server.id]["enabled"]['swear'] = False
 		config[server.id]["enabled"]['role'] = False
 		config[server.id]["enabled"]['joinDm'] = False
 		config[server.id]["enabled"]['link'] = False

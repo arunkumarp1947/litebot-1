@@ -15,8 +15,8 @@ bot.remove_command('help')
 @bot.event
 async def on_ready():
 	print('Ready\n')
-	await bot.change_presence(game=discord.Game(name=str('{:,}'.format(len(set(bot.get_all_members()))-1))+" users | "+str(len(bot.servers))+" servers",type=3,url="http://jxhub.xyz"))
-		
+	await bot.change_presence(game=discord.Game(name=str(len(set(bot.get_all_members()))-1)+" users | "+str(len(bot.servers))+" servers",type=3,url="http://jxhub.xyz"))	
+
 @bot.async_event
 async def on_server_join(Server: discord.Server):
 	with open('config.json', 'r') as j:
@@ -396,6 +396,7 @@ async def enable(ctx, command: str):
 		with open('config.json', 'r') as j:
 			config = json.load(j)
 			await update_data(config, ctx.message.server)
+		
 		if (ctx.message.author.server_permissions.administrator):
 			#Ban
 			if (command.lower() == "ban"):
@@ -479,7 +480,7 @@ async def enable(ctx, command: str):
 			else:
 				await bot.say("Invalid argument. Do `+help enable` for more info")
 		else:
-			bot.say("You must have admin to enable or disable a command")
+			await bot.say("You must have admin to enable or disable a command")
 		with open("config.json", "w") as j:
 			json.dump(config, j, indent=4, sort_keys=True)
 	except:
@@ -574,7 +575,7 @@ async def disable(ctx, command: str):
 			else:
 				await bot.say("Invalid argument. Do `+help disable` for more info")
 		else:
-			bot.say("You must have administrator to set a command")
+			await bot.say("You must have administrator to set a command")
 		with open("config.json", "w") as j:
 			json.dump(config, j, indent=4, sort_keys=True)
 	except:
